@@ -1,0 +1,22 @@
+{
+  // tsconfig.base.json を継承しない。base の noUncheckedIndexedAccess /
+  // exactOptionalPropertyTypes / verbatimModuleSyntax は、paths 経由でこのプログラムに
+  // 取り込まれる submodules（SengenUI / VscodeShellLayout）のソースが通らないため。
+  // 参照実装（PokemonBattleAI/megadenryu_support_ui）と同じ strict 構成に合わせる。
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "sengen-ui": ["../../submodules/SengenUI/index"],
+      "sengen-ui/*": ["../../submodules/SengenUI/*"],
+      "vscode-shell-layout": ["../../submodules/VscodeShellLayout/src/index"],
+      "vscode-shell-layout/*": ["../../submodules/VscodeShellLayout/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

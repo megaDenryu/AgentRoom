@@ -6,6 +6,8 @@
   ],
   "scripts": {
     "dev:server": "npm run dev -w @agentroom/server",
+    "dev:ui": "npm run dev -w @agentroom/ui",
+    "build:ui": "npm run build -w @agentroom/ui",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
   }

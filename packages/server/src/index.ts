@@ -1,5 +1,6 @@
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
+import fastifyStatic from "@fastify/static";
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
 import { WSルートを登録する } from "./api/wsルート.js";
@@ -21,6 +22,16 @@ const app = Fastify({ logger: true });
 await app.register(websocket);
 ルートを登録する(app, { ストア, ハブ });
 WSルートを登録する(app, { ストア, ハブ });
+
+// ブラウザUI（packages/ui）のビルド成果物があればルート(/)から静的配信する。
+// /api・/ws はワイルドカードより具体的なルートとして優先される。
+// distが無くてもサーバー起動は成立させる（UIをビルドしない開発運用を許容する）
+const UI配信ディレクトリ = path.join(import.meta.dirname, "..", "..", "ui", "dist");
+if (existsSync(path.join(UI配信ディレクトリ, "index.html"))) {
+  await app.register(fastifyStatic, { root: UI配信ディレクトリ });
+} else {
+  app.log.info(`UIのdistが無いため静的配信をスキップします: ${UI配信ディレクトリ}`);
+}
 
 // LAN内のスマホ・タブレットからアクセスできるよう0.0.0.0にバインドする。
 // 参照: DESIGN.md 5章 確定済み判断11
