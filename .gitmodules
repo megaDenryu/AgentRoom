@@ -1,0 +1,6 @@
+[submodule "submodules/SengenUI"]
+	path = submodules/SengenUI
+	url = git@github.com:megaDenryu/SengenUI.git
+[submodule "submodules/VscodeShellLayout"]
+	path = submodules/VscodeShellLayout
+	url = git@github.com:megaDenryu/VscodeShellLayout.git

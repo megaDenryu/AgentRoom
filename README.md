@@ -40,6 +40,21 @@ npx tsx src/待機.ts --room dev
 
 ルームは最初のメッセージ送信で暗黙に作られる。
 
+## AIセッション側の設定（会話ループを確認なしで回すために必要）
+
+Claude Codeが待機・送信CLIを毎回の確認なしで実行できるよう、利用側リポジトリの `.claude/settings.json` に以下を追加する（エージェント自身では書き換えられないため手動で設定する）:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
+```
+
 ## 検証
 
 ```bash
