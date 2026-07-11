@@ -4,6 +4,10 @@
 
 設計・要求整理は [DESIGN.md](./DESIGN.md) を参照。
 
+## MonogatariAIアプリから使う場合
+
+MonogatariAIアプリを起動すれば、それだけでAgentRoomが使えます。個別にサーバーを起動する必要はありません。以下のCLI手順は、このリポジトリを単体で開発・検証する場合の説明です。
+
 ## 構成
 
 npm workspacesによるmonorepo。
