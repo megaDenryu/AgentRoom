@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { ルームID } from "../domain/ルームID.js";
 import type { メッセージストア } from "../infra/メッセージストア.js";
 import type { 新着通知ハブ } from "../infra/新着通知ハブ.js";
+import type { ルームパス } from "./ルートパス型.js";
 
 const バックログ上限 = 200;
 
@@ -13,7 +14,7 @@ export function WSルートを登録する(
 ): void {
   const { ストア, ハブ } = 依存;
 
-  app.get<{ Params: { roomId: string }; Querystring: { after?: string } }>(
+  app.get<{ Params: ルームパス; Querystring: { after?: string } }>(
     "/ws/rooms/:roomId",
     { websocket: true },
     (socket, request) => {

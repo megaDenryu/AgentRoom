@@ -1,4 +1,4 @@
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 // 注意: バレル（vscode-shell-layout）経由で読むとSengenUIのDOM依存コードが
 // vanilla-extractのNode実行に混入してビルドが落ちる。css.tsからはテーマモジュールを直接importする
 import { 配色, フォント } from "vscode-shell-layout/テーマ/デフォルトテーマ";
@@ -20,17 +20,40 @@ export const 接続バナー = style({
   padding: "6px 12px",
   fontSize: "12px",
   flexShrink: 0,
-  selectors: {
-    '&[data-connection="接続済み"]': { display: "none" },
-    '&[data-connection="接続試行中"]': {
-      backgroundColor: "#fff3cd",
-      color: "#664d03",
-    },
-    '&[data-connection="再接続待ち"]': {
-      backgroundColor: "#f8d7da",
-      color: "#58151c",
-    },
-  },
+});
+
+// data-attributeセレクタは selectors だとコンパイル未検出の実行時エラーになるため globalStyle を使う
+globalStyle(`${接続バナー}[data-connection="接続済み"]`, { display: "none" });
+globalStyle(`${接続バナー}[data-connection="接続試行中"]`, {
+  backgroundColor: "#fff3cd",
+  color: "#664d03",
+});
+globalStyle(`${接続バナー}[data-connection="再接続待ち"]`, {
+  backgroundColor: "#f8d7da",
+  color: "#58151c",
+});
+
+export const フィルタバナー = style({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  padding: "6px 12px",
+  fontSize: "12px",
+  flexShrink: 0,
+  backgroundColor: "#e3f2fd",
+  color: "#0d47a1",
+});
+
+globalStyle(`${フィルタバナー}[data-visible="false"]`, { display: "none" });
+
+export const フィルタ解除ボタン = style({
+  border: `1px solid ${配色.ブルー}`,
+  borderRadius: "4px",
+  backgroundColor: "#ffffff",
+  color: 配色.ブルー,
+  padding: "2px 10px",
+  fontSize: "11px",
+  cursor: "pointer",
 });
 
 export const タイムライン枠 = style({
@@ -78,16 +101,83 @@ export const 送信者ラベル = style({
   fontWeight: 600,
 });
 
+export const HUMANバッジ = style({
+  border: "1px solid #2e7d32",
+  color: "#2e7d32",
+  borderRadius: "3px",
+  padding: "0 6px",
+  fontSize: "10px",
+  fontWeight: 700,
+  letterSpacing: "0.5px",
+});
+
+export const 宛先ラベル = style({
+  fontSize: "12px",
+  fontWeight: 600,
+  color: 配色.ブルー,
+});
+
 export const 時刻ラベル = style({
   fontSize: "11px",
   color: 配色.パネルテキスト薄,
 });
 
 export const 本文 = style({
-  whiteSpace: "pre-wrap",
-  overflowWrap: "anywhere",
   fontSize: "14px",
   lineHeight: 1.6,
+  display: "flex",
+  flexDirection: "column",
+  gap: "6px",
+});
+
+export const 文章ブロック = style({
+  whiteSpace: "pre-wrap",
+  overflowWrap: "anywhere",
+});
+
+export const 太字 = style({
+  fontWeight: 700,
+});
+
+export const インラインコード = style({
+  fontFamily: フォント.モノ,
+  fontSize: "0.9em",
+  backgroundColor: "#eef0f4",
+  border: `1px solid ${配色.パネル境界線}`,
+  borderRadius: "3px",
+  padding: "0 4px",
+});
+
+export const コードブロック = style({
+  fontFamily: フォント.モノ,
+  fontSize: "12px",
+  lineHeight: 1.5,
+  whiteSpace: "pre",
+  overflowX: "auto",
+  backgroundColor: "#1a1a2e",
+  color: "#e0e4ec",
+  borderRadius: "4px",
+  padding: "8px 10px",
+});
+
+export const 未読区切り = style({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  color: "#c62828",
+  fontSize: "11px",
+  fontWeight: 600,
+  flexShrink: 0,
+  "::before": {
+    content: '""',
+    flex: 1,
+    borderTop: "1px solid #c62828",
+  },
+  "::after": {
+    content: '""',
+    flex: 1,
+    borderTop: "1px solid #c62828",
+  },
 });
 
 export const 新着ジャンプボタン = style({
@@ -103,10 +193,9 @@ export const 新着ジャンプボタン = style({
   cursor: "pointer",
   fontSize: "12px",
   boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-  selectors: {
-    '&[data-visible="false"]': { display: "none" },
-  },
 });
+
+globalStyle(`${新着ジャンプボタン}[data-visible="false"]`, { display: "none" });
 
 export const 入力欄 = style({
   display: "flex",
@@ -126,6 +215,16 @@ export const 送信者名入力 = style({
   borderRadius: "4px",
   fontSize: "13px",
   fontFamily: フォント.標準,
+});
+
+export const 宛先セレクト = style({
+  padding: "6px 8px",
+  border: `1px solid ${配色.パネル境界線}`,
+  borderRadius: "4px",
+  fontSize: "13px",
+  fontFamily: フォント.標準,
+  backgroundColor: "#ffffff",
+  maxWidth: "140px",
 });
 
 export const 本文入力 = style({
@@ -148,16 +247,12 @@ export const 送信ボタン = style({
   borderRadius: "4px",
   cursor: "pointer",
   fontSize: "13px",
-  selectors: {
-    "&:disabled": { opacity: 0.5, cursor: "default" },
-  },
+  ":disabled": { opacity: 0.5, cursor: "default" },
 });
 
 export const 送信エラー表示 = style({
   width: "100%",
   color: "#c62828",
   fontSize: "12px",
-  selectors: {
-    "&:empty": { display: "none" },
-  },
+  ":empty": { display: "none" },
 });

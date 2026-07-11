@@ -8,6 +8,8 @@ export interface メッセージDTO {
   readonly 送信者: string;
   readonly 本文: string;
   readonly 送信時刻: string;
+  // null=全員宛 / string=そのエージェント個別宛
+  readonly 宛先: string | null;
 }
 
 export function メッセージDTOに絞る(値: unknown): メッセージDTO {
@@ -23,7 +25,9 @@ export function メッセージDTOに絞る(値: unknown): メッセージDTO {
     "本文" in 値 &&
     typeof 値.本文 === "string" &&
     "送信時刻" in 値 &&
-    typeof 値.送信時刻 === "string"
+    typeof 値.送信時刻 === "string" &&
+    "宛先" in 値 &&
+    (値.宛先 === null || typeof 値.宛先 === "string")
   ) {
     return {
       連番: 値.連番,
@@ -31,6 +35,7 @@ export function メッセージDTOに絞る(値: unknown): メッセージDTO {
       送信者: 値.送信者,
       本文: 値.本文,
       送信時刻: 値.送信時刻,
+      宛先: 値.宛先,
     };
   }
   throw new Error(`メッセージの形式が想定と一致しません: ${JSON.stringify(値)}`);
