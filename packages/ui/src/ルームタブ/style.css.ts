@@ -2,7 +2,12 @@ import { globalStyle, style } from "@vanilla-extract/css";
 // 注意: バレル（vscode-shell-layout）経由で読むとSengenUIのDOM依存コードが
 // vanilla-extractのNode実行に混入してビルドが落ちる。css.tsからはテーマモジュールを直接importする
 import { フォント } from "vscode-shell-layout/テーマ/デフォルトテーマ";
-import { AgentRoomアクセント上文字色, AgentRoomテーマ配色, AgentRoom警告色 } from "../テーマ";
+import {
+  AgentRoomアクセント上文字色,
+  AgentRoomコードブロック配色,
+  AgentRoomテーマ配色,
+  AgentRoom警告色,
+} from "../テーマ";
 
 // 参照: エディタエリアのコンテンツ要素には flex:1 / minWidth:0 / minHeight:0 が当たる
 // （VscodeShellLayout ペイン木/style.css.ts）。はみ出し制御はこちら側の minHeight:0 で受ける
@@ -155,8 +160,8 @@ export const コードブロック = style({
   lineHeight: 1.5,
   whiteSpace: "pre",
   overflowX: "auto",
-  backgroundColor: AgentRoomテーマ配色.アプリ背景,
-  color: AgentRoomテーマ配色.パネルテキスト主,
+  backgroundColor: AgentRoomコードブロック配色.背景,
+  color: AgentRoomコードブロック配色.文字,
   borderRadius: "4px",
   padding: "8px 10px",
 });
@@ -190,12 +195,12 @@ export const 新着ジャンプボタン = style({
   borderRadius: "14px",
   padding: "6px 14px",
   backgroundColor: AgentRoomテーマ配色.ブルー,
-  // ミント系アクセントは白文字だとコントラスト不足になるため、暗色文字にする
   color: AgentRoomアクセント上文字色,
   cursor: "pointer",
   fontSize: "12px",
   fontWeight: 600,
-  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.4)",
+  // 淡いライトテーマ上では濃い影が浮くため、旧ダークテーマ比で薄めの影にする
+  boxShadow: "0 2px 6px rgba(58, 51, 85, 0.18)",
 });
 
 globalStyle(`${新着ジャンプボタン}[data-visible="false"]`, { display: "none" });
