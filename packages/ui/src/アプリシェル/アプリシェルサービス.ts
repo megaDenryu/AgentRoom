@@ -73,7 +73,7 @@ export class アプリシェルサービス {
 
   async 通知許可を要求する(): Promise<void> {
     const 状態 = await this._通知.許可を要求する();
-    this._部品.ステータス.表示する(許可状態の表示文言(状態));
+    this._部品.サイドバー.通知状態を表示する(許可状態の表示文言(状態));
   }
 
   private _タブidからルームID(タブid: string): string | null {

@@ -1,7 +1,8 @@
 import { globalStyle, style } from "@vanilla-extract/css";
 // 注意: バレル（vscode-shell-layout）経由で読むとSengenUIのDOM依存コードが
 // vanilla-extractのNode実行に混入してビルドが落ちる。css.tsからはテーマモジュールを直接importする
-import { 配色, フォント } from "vscode-shell-layout/テーマ/デフォルトテーマ";
+import { フォント } from "vscode-shell-layout/テーマ/デフォルトテーマ";
+import { AgentRoomアクセント上文字色, AgentRoomテーマ配色, AgentRoom警告色 } from "../テーマ";
 
 // 参照: エディタエリアのコンテンツ要素には flex:1 / minWidth:0 / minHeight:0 が当たる
 // （VscodeShellLayout ペイン木/style.css.ts）。はみ出し制御はこちら側の minHeight:0 で受ける
@@ -11,8 +12,8 @@ export const ルート = style({
   height: "100%",
   minHeight: 0,
   minWidth: 0,
-  backgroundColor: 配色.パネル背景,
-  color: 配色.パネルテキスト主,
+  backgroundColor: AgentRoomテーマ配色.パネル背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
   fontFamily: フォント.標準,
 });
 
@@ -47,10 +48,10 @@ export const フィルタバナー = style({
 globalStyle(`${フィルタバナー}[data-visible="false"]`, { display: "none" });
 
 export const フィルタ解除ボタン = style({
-  border: `1px solid ${配色.ブルー}`,
+  border: `1px solid ${AgentRoomテーマ配色.ブルー}`,
   borderRadius: "4px",
-  backgroundColor: "#ffffff",
-  color: 配色.ブルー,
+  backgroundColor: AgentRoomテーマ配色.パネル表面,
+  color: AgentRoomテーマ配色.ブルー,
   padding: "2px 10px",
   fontSize: "11px",
   cursor: "pointer",
@@ -75,8 +76,8 @@ export const タイムライン = style({
 });
 
 export const メッセージ行 = style({
-  backgroundColor: "#ffffff",
-  border: `1px solid ${配色.パネル境界線}`,
+  backgroundColor: AgentRoomテーマ配色.パネル表面,
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderLeftWidth: "4px",
   borderLeftColor: "var(--sender-color, #888888)",
   borderRadius: "4px",
@@ -114,12 +115,12 @@ export const HUMANバッジ = style({
 export const 宛先ラベル = style({
   fontSize: "12px",
   fontWeight: 600,
-  color: 配色.ブルー,
+  color: AgentRoomテーマ配色.ブルー,
 });
 
 export const 時刻ラベル = style({
   fontSize: "11px",
-  color: 配色.パネルテキスト薄,
+  color: AgentRoomテーマ配色.パネルテキスト薄,
 });
 
 export const 本文 = style({
@@ -142,8 +143,8 @@ export const 太字 = style({
 export const インラインコード = style({
   fontFamily: フォント.モノ,
   fontSize: "0.9em",
-  backgroundColor: "#eef0f4",
-  border: `1px solid ${配色.パネル境界線}`,
+  backgroundColor: AgentRoomテーマ配色.パネルホバー,
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "3px",
   padding: "0 4px",
 });
@@ -154,8 +155,8 @@ export const コードブロック = style({
   lineHeight: 1.5,
   whiteSpace: "pre",
   overflowX: "auto",
-  backgroundColor: "#1a1a2e",
-  color: "#e0e4ec",
+  backgroundColor: AgentRoomテーマ配色.アプリ背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
   borderRadius: "4px",
   padding: "8px 10px",
 });
@@ -164,19 +165,19 @@ export const 未読区切り = style({
   display: "flex",
   alignItems: "center",
   gap: "8px",
-  color: "#c62828",
+  color: AgentRoom警告色.文字,
   fontSize: "11px",
   fontWeight: 600,
   flexShrink: 0,
   "::before": {
     content: '""',
     flex: 1,
-    borderTop: "1px solid #c62828",
+    borderTop: `1px solid ${AgentRoom警告色.境界}`,
   },
   "::after": {
     content: '""',
     flex: 1,
-    borderTop: "1px solid #c62828",
+    borderTop: `1px solid ${AgentRoom警告色.境界}`,
   },
 });
 
@@ -188,11 +189,13 @@ export const 新着ジャンプボタン = style({
   border: "none",
   borderRadius: "14px",
   padding: "6px 14px",
-  backgroundColor: 配色.ブルー,
-  color: "#ffffff",
+  backgroundColor: AgentRoomテーマ配色.ブルー,
+  // ミント系アクセントは白文字だとコントラスト不足になるため、暗色文字にする
+  color: AgentRoomアクセント上文字色,
   cursor: "pointer",
   fontSize: "12px",
-  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+  fontWeight: 600,
+  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.4)",
 });
 
 globalStyle(`${新着ジャンプボタン}[data-visible="false"]`, { display: "none" });
@@ -201,8 +204,8 @@ export const 入力欄 = style({
   display: "flex",
   gap: "8px",
   padding: "8px",
-  borderTop: `1px solid ${配色.パネル境界線}`,
-  backgroundColor: 配色.パネル表面,
+  borderTop: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+  backgroundColor: AgentRoomテーマ配色.パネル表面,
   alignItems: "flex-end",
   flexWrap: "wrap",
   flexShrink: 0,
@@ -211,19 +214,22 @@ export const 入力欄 = style({
 export const 送信者名入力 = style({
   width: "110px",
   padding: "6px 8px",
-  border: `1px solid ${配色.パネル境界線}`,
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "13px",
   fontFamily: フォント.標準,
+  backgroundColor: AgentRoomテーマ配色.パネル背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
 });
 
 export const 宛先セレクト = style({
   padding: "6px 8px",
-  border: `1px solid ${配色.パネル境界線}`,
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "13px",
   fontFamily: フォント.標準,
-  backgroundColor: "#ffffff",
+  backgroundColor: AgentRoomテーマ配色.パネル背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
   maxWidth: "140px",
 });
 
@@ -232,16 +238,18 @@ export const 本文入力 = style({
   minWidth: "160px",
   resize: "vertical",
   padding: "6px 8px",
-  border: `1px solid ${配色.パネル境界線}`,
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "14px",
   fontFamily: フォント.標準,
   lineHeight: 1.5,
+  backgroundColor: AgentRoomテーマ配色.パネル背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
 });
 
 export const 送信ボタン = style({
   padding: "7px 16px",
-  backgroundColor: 配色.ネイビー,
+  backgroundColor: AgentRoomテーマ配色.ネイビー,
   color: "#ffffff",
   border: "none",
   borderRadius: "4px",
@@ -252,7 +260,7 @@ export const 送信ボタン = style({
 
 export const 送信エラー表示 = style({
   width: "100%",
-  color: "#c62828",
+  color: AgentRoom警告色.文字,
   fontSize: "12px",
   ":empty": { display: "none" },
 });

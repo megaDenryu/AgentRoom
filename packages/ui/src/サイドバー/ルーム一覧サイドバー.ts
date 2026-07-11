@@ -14,6 +14,7 @@ import { ルーム一覧サイドバーサービス } from "./ルーム一覧サ
 import { ルーム一覧サイドバー部品 } from "./ルーム一覧サイドバー部品";
 import { ルーム一覧領域 } from "./ルーム一覧領域";
 import { 状態表示ラベル } from "./状態表示ラベル";
+import { 通知状態ラベル } from "./通知状態ラベル";
 import * as styles from "./style.css";
 
 const 定期更新間隔ミリ秒 = 10_000;
@@ -39,6 +40,7 @@ export class ルーム一覧サイドバー
   private readonly _メンバー一覧 = new メンバー一覧領域();
   private readonly _メンバー見出し = new メンバー見出しラベル();
   private readonly _状態表示 = new 状態表示ラベル();
+  private readonly _通知状態 = new 通知状態ラベル();
   private readonly _サービス: ルーム一覧サイドバーサービス;
 
   constructor(クライアント: Relayクライアント) {
@@ -88,12 +90,17 @@ export class ルーム一覧サイドバー
           this._メンバー一覧,
           button({ text: "通知を有効化", class: styles.通知ボタン }).onClick(() =>
             this._配線.先.on通知有効化(),
-          )])
+          ),
+          this._通知状態])
     );
   }
 
   選択ルームを設定する(ルームID: string | null): void {
     this._サービス.選択ルームを設定する(ルームID);
+  }
+
+  通知状態を表示する(文言: string): void {
+    this._通知状態.表示する(文言);
   }
 
   更新する(): Promise<void> {
