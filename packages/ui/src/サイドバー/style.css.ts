@@ -1,4 +1,5 @@
 import { globalStyle, style } from "@vanilla-extract/css";
+import { 狭幅メディアクエリ } from "../レスポンシブ";
 import { AgentRoomテーマ配色, AgentRoom警告色 } from "../テーマ";
 
 // ルーム一覧（上段）とメンバー一覧（下段）の2段構成
@@ -34,6 +35,9 @@ export const 更新ボタン = style({
   fontSize: "12px",
   cursor: "pointer",
   ":hover": { backgroundColor: AgentRoomテーマ配色.パネルホバー },
+  "@media": {
+    [狭幅メディアクエリ]: { minHeight: "44px", padding: "10px 14px", fontSize: "13px" },
+  },
 });
 
 export const フォーム行 = style({
@@ -79,6 +83,9 @@ export const フォームボタン = style({
   cursor: "pointer",
   flexShrink: 0,
   ":disabled": { opacity: 0.5, cursor: "default" },
+  "@media": {
+    [狭幅メディアクエリ]: { minHeight: "44px", padding: "10px 14px", fontSize: "13px" },
+  },
 });
 
 export const 状態表示 = style({
@@ -100,6 +107,9 @@ export const ルーム項目 = style({
   cursor: "pointer",
   borderBottom: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   ":hover": { backgroundColor: AgentRoomテーマ配色.パネルホバー },
+  "@media": {
+    [狭幅メディアクエリ]: { minHeight: "44px", display: "flex", flexDirection: "column", justifyContent: "center" },
+  },
 });
 
 export const ルーム名行 = style({
@@ -174,6 +184,9 @@ export const メンバー項目 = style({
   cursor: "pointer",
   borderBottom: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   ":hover": { backgroundColor: AgentRoomテーマ配色.パネルホバー },
+  "@media": {
+    [狭幅メディアクエリ]: { minHeight: "44px", padding: "10px 12px" },
+  },
 });
 
 export const メンバー名 = style({
@@ -217,6 +230,9 @@ export const 通知ボタン = style({
   cursor: "pointer",
   flexShrink: 0,
   ":hover": { backgroundColor: AgentRoomテーマ配色.パネルホバー },
+  "@media": {
+    [狭幅メディアクエリ]: { minHeight: "44px", padding: "10px 14px", fontSize: "13px" },
+  },
 });
 
 // 通知許可状態の小さな状態表示（ステータスバー廃止に伴い、サイドバー下部に移設）

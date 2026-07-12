@@ -8,6 +8,7 @@ import {
   AgentRoomテーマ配色,
   AgentRoom警告色,
 } from "../テーマ";
+import { 狭幅メディアクエリ } from "../レスポンシブ";
 
 // 参照: エディタエリアのコンテンツ要素には flex:1 / minWidth:0 / minHeight:0 が当たる
 // （VscodeShellLayout ペイン木/style.css.ts）。はみ出し制御はこちら側の minHeight:0 で受ける
@@ -265,6 +266,14 @@ export const 送信ボタン = style({
   cursor: "pointer",
   fontSize: "13px",
   ":disabled": { opacity: 0.5, cursor: "default" },
+  // 狭幅では指でのタップが主操作になるため、送信ボタンのタップ領域を44px目安まで広げる
+  "@media": {
+    [狭幅メディアクエリ]: {
+      minHeight: "44px",
+      padding: "10px 20px",
+      fontSize: "15px",
+    },
+  },
 });
 
 export const 送信エラー表示 = style({
