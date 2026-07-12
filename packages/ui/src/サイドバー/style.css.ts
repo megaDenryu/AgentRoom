@@ -1,7 +1,4 @@
 import { globalStyle, style } from "@vanilla-extract/css";
-// 注意: バレル（vscode-shell-layout）経由で読むとSengenUIのDOM依存コードが
-// vanilla-extractのNode実行に混入してビルドが落ちる。css.tsからはテーマモジュールを直接importする
-import { フォント } from "vscode-shell-layout/テーマ/デフォルトテーマ";
 import { AgentRoomテーマ配色, AgentRoom警告色 } from "../テーマ";
 
 // ルーム一覧（上段）とメンバー一覧（下段）の2段構成
@@ -10,7 +7,8 @@ export const ルート = style({
   flexDirection: "column",
   height: "100%",
   color: AgentRoomテーマ配色.パネルテキスト主,
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
 });
 
 export const ヘッダ = style({
@@ -53,7 +51,8 @@ export const フォーム入力 = style({
   border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "12px",
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
   backgroundColor: AgentRoomテーマ配色.パネル表面,
   color: AgentRoomテーマ配色.パネルテキスト主,
 });
@@ -63,7 +62,8 @@ export const フォームセレクト = style({
   border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "12px",
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
   backgroundColor: AgentRoomテーマ配色.パネル表面,
   color: AgentRoomテーマ配色.パネルテキスト主,
   maxWidth: "110px",

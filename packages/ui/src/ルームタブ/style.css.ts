@@ -19,7 +19,8 @@ export const ルート = style({
   minWidth: 0,
   backgroundColor: AgentRoomテーマ配色.パネル背景,
   color: AgentRoomテーマ配色.パネルテキスト主,
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
 });
 
 export const 接続バナー = style({
@@ -222,7 +223,8 @@ export const 送信者名入力 = style({
   border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "13px",
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
   backgroundColor: AgentRoomテーマ配色.パネル背景,
   color: AgentRoomテーマ配色.パネルテキスト主,
 });
@@ -232,7 +234,8 @@ export const 宛先セレクト = style({
   border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "13px",
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
   backgroundColor: AgentRoomテーマ配色.パネル背景,
   color: AgentRoomテーマ配色.パネルテキスト主,
   maxWidth: "140px",
@@ -246,7 +249,8 @@ export const 本文入力 = style({
   border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
   borderRadius: "4px",
   fontSize: "14px",
-  fontFamily: フォント.標準,
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  fontWeight: AgentRoomテーマ配色.基本文字ウェイト,
   lineHeight: 1.5,
   backgroundColor: AgentRoomテーマ配色.パネル背景,
   color: AgentRoomテーマ配色.パネルテキスト主,
