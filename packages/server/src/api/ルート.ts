@@ -11,7 +11,10 @@ export function ルートを登録する(
   app: FastifyInstance,
   依存: { ストア: メッセージストア; ハブ: 新着通知ハブ },
 ): void {
-  app.get("/api/health", async () => ({ ok: true }));
+  // serviceフィールドは、ヘルスチェック元(埋め込みホスト側)が「200を返す別プロセス」と
+  // 「本物のAgentRoom」を区別するための識別子。okだけでは無関係なプロセスの相乗りを
+  // 検知できない
+  app.get("/api/health", async () => ({ ok: true, service: "agentroom" }));
 
   メッセージルートを登録する(app, 依存);
   メンバールートを登録する(app, 依存);
