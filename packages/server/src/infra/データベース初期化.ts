@@ -36,6 +36,16 @@ export function データベースを初期化する(db: Database.Database): voi
       card_id INTEGER,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS charas (
+      name TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      prompt TEXT NOT NULL,
+      icon_data_url TEXT NOT NULL,
+      behavior_note TEXT NOT NULL,
+      creator TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
   宛先列を追加する(db);
 }

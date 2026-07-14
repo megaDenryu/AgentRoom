@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { 検証エラー } from "../domain/検証エラー.js";
 import type { メッセージストア } from "../infra/メッセージストア.js";
 import type { 新着通知ハブ } from "../infra/新着通知ハブ.js";
+import { キャラルートを登録する } from "./キャラルート.js";
 import { 既読ルートを登録する } from "./既読ルート.js";
 import { メッセージルートを登録する } from "./メッセージルート.js";
 import { メンバールートを登録する } from "./メンバールート.js";
@@ -21,6 +22,7 @@ export function ルートを登録する(
   メンバールートを登録する(app, 依存);
   既読ルートを登録する(app, 依存);
   稼働ルートを登録する(app, 依存);
+  キャラルートを登録する(app, 依存);
 
   // クライアント起因の不正入力（検証エラー）だけを400に写像する。
   // それ以外の例外はサーバー側のバグとしてFastifyのデフォルト処理（500）に任せる

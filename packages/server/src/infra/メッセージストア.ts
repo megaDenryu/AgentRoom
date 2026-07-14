@@ -1,6 +1,10 @@
 import Database from "better-sqlite3";
+import type { アイコンDataUrl } from "../domain/アイコンDataUrl.js";
 import type { エージェント名 } from "../domain/エージェント名.js";
 import type { エージェント種別 } from "../domain/エージェント種別.js";
+import type { キャラ } from "../domain/キャラ.js";
+import type { キャラ種別 } from "../domain/キャラ種別.js";
+import type { キャラプロンプト } from "../domain/キャラプロンプト.js";
 import type { メッセージ } from "../domain/メッセージ.js";
 import type { メンバー } from "../domain/メンバー.js";
 import type { ルームID } from "../domain/ルームID.js";
@@ -10,7 +14,9 @@ import type { 宛先 } from "../domain/宛先.js";
 import type { 現在の作業内容 } from "../domain/現在の作業内容.js";
 import type { 稼働状態 } from "../domain/稼働状態.js";
 import type { 稼働表明 } from "../domain/稼働表明.js";
+import type { 行動パターンメモ } from "../domain/行動パターンメモ.js";
 import { データベースを初期化する } from "./データベース初期化.js";
+import { キャラリポジトリ } from "./キャラリポジトリ.js";
 import { 既読リポジトリ } from "./既読リポジトリ.js";
 import { メッセージリポジトリ } from "./メッセージリポジトリ.js";
 import { メンバーリポジトリ } from "./メンバーリポジトリ.js";
@@ -25,6 +31,7 @@ export class メッセージストア {
   private readonly 既読: 既読リポジトリ;
   private readonly ルーム概要: ルーム概要リポジトリ;
   private readonly 稼働表明: 稼働表明リポジトリ;
+  private readonly キャラ: キャラリポジトリ;
 
   private constructor(private readonly db: Database.Database) {
     this.メッセージ = new メッセージリポジトリ(db);
@@ -32,6 +39,7 @@ export class メッセージストア {
     this.既読 = new 既読リポジトリ(db);
     this.ルーム概要 = new ルーム概要リポジトリ(db, this.既読);
     this.稼働表明 = new 稼働表明リポジトリ(db);
+    this.キャラ = new キャラリポジトリ(db);
   }
 
   static ファイルから開く(パス: string): メッセージストア {
@@ -107,6 +115,32 @@ export class メッセージストア {
 
   稼働一覧を取得する(): 稼働表明[] {
     return this.稼働表明.一覧を取得する();
+  }
+
+  キャラを作成または更新する(
+    名前: エージェント名,
+    種別: キャラ種別,
+    プロンプト: キャラプロンプト,
+    アイコン: アイコンDataUrl,
+    行動パターンメモ値: 行動パターンメモ,
+    作成者: エージェント名,
+  ): キャラ {
+    return this.キャラ.作成または更新する(
+      名前,
+      種別,
+      プロンプト,
+      アイコン,
+      行動パターンメモ値,
+      作成者,
+    );
+  }
+
+  キャラを削除する(名前: エージェント名): void {
+    this.キャラ.削除する(名前);
+  }
+
+  キャラ一覧を取得する(): キャラ[] {
+    return this.キャラ.一覧を取得する();
   }
 
   閉じる(): void {

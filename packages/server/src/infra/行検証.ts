@@ -137,6 +137,50 @@ export function 稼働表明行に絞る(行: unknown): {
   throw new Error(`presenceテーブルの行がスキーマと一致しません: ${JSON.stringify(行)}`);
 }
 
+export function キャラ行に絞る(行: unknown): {
+  name: string;
+  type: string;
+  prompt: string;
+  icon_data_url: string;
+  behavior_note: string;
+  creator: string;
+  created_at: string;
+  updated_at: string;
+} {
+  if (
+    typeof 行 === "object" &&
+    行 !== null &&
+    "name" in 行 &&
+    typeof 行.name === "string" &&
+    "type" in 行 &&
+    typeof 行.type === "string" &&
+    "prompt" in 行 &&
+    typeof 行.prompt === "string" &&
+    "icon_data_url" in 行 &&
+    typeof 行.icon_data_url === "string" &&
+    "behavior_note" in 行 &&
+    typeof 行.behavior_note === "string" &&
+    "creator" in 行 &&
+    typeof 行.creator === "string" &&
+    "created_at" in 行 &&
+    typeof 行.created_at === "string" &&
+    "updated_at" in 行 &&
+    typeof 行.updated_at === "string"
+  ) {
+    return {
+      name: 行.name,
+      type: 行.type,
+      prompt: 行.prompt,
+      icon_data_url: 行.icon_data_url,
+      behavior_note: 行.behavior_note,
+      creator: 行.creator,
+      created_at: 行.created_at,
+      updated_at: 行.updated_at,
+    };
+  }
+  throw new Error(`charasテーブルの行がスキーマと一致しません: ${JSON.stringify(行)}`);
+}
+
 export function 既読位置行に絞る(行: unknown): number {
   if (行 === undefined) return 0;
   if (

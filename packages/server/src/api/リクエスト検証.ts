@@ -78,6 +78,40 @@ export function 稼働表明更新内容に絞る(ボディ: unknown): {
   );
 }
 
+export function キャラ登録内容に絞る(ボディ: unknown): {
+  種別: string;
+  プロンプト: string | undefined;
+  アイコンdataUrl: string | undefined;
+  行動パターンメモ: string | undefined;
+  作成者: string;
+} {
+  if (
+    typeof ボディ === "object" &&
+    ボディ !== null &&
+    "種別" in ボディ &&
+    typeof ボディ.種別 === "string" &&
+    "作成者" in ボディ &&
+    typeof ボディ.作成者 === "string"
+  ) {
+    const プロンプト =
+      "プロンプト" in ボディ && typeof ボディ.プロンプト === "string"
+        ? ボディ.プロンプト
+        : undefined;
+    const アイコンdataUrl =
+      "アイコンdataUrl" in ボディ && typeof ボディ.アイコンdataUrl === "string"
+        ? ボディ.アイコンdataUrl
+        : undefined;
+    const 行動パターンメモ =
+      "行動パターンメモ" in ボディ && typeof ボディ.行動パターンメモ === "string"
+        ? ボディ.行動パターンメモ
+        : undefined;
+    return { 種別: ボディ.種別, プロンプト, アイコンdataUrl, 行動パターンメモ, 作成者: ボディ.作成者 };
+  }
+  throw new 検証エラー(
+    'ボディは { "種別": string, "作成者": string, "プロンプト"?: string, "アイコンdataUrl"?: string, "行動パターンメモ"?: string } である必要があります',
+  );
+}
+
 export function 数値クエリを読む(値: string | undefined, デフォルト: number): number {
   if (値 === undefined) return デフォルト;
   const 数値 = Number(値);

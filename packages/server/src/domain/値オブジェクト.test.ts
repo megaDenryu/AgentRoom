@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { アイコンDataUrl } from "./アイコンDataUrl.js";
 import { エージェント名 } from "./エージェント名.js";
 import { エージェント種別 } from "./エージェント種別.js";
+import { キャラ種別 } from "./キャラ種別.js";
+import { キャラプロンプト } from "./キャラプロンプト.js";
 import { ルームID } from "./ルームID.js";
 import { 個別宛, 全員宛, 宛先をDTO値にする, 宛先をDTO値から作る } from "./宛先.js";
 import { 検証エラー } from "./検証エラー.js";
+import { 行動パターンメモ } from "./行動パターンメモ.js";
 
 describe("ルームID", () => {
   it("英数字・ハイフン・アンダースコアを受け入れる", () => {
@@ -48,5 +52,53 @@ describe("宛先", () => {
     if (個別.種別 === "個別") {
       expect(個別.名前.値).toBe("AI2");
     }
+  });
+});
+
+describe("キャラ種別", () => {
+  it("人間とAIだけを受け入れる", () => {
+    expect(キャラ種別.create("人間").値).toBe("人間");
+    expect(キャラ種別.create("AI").値).toBe("AI");
+    expect(() => キャラ種別.create("claude-code")).toThrow(検証エラー);
+    expect(() => キャラ種別.create("")).toThrow(検証エラー);
+  });
+});
+
+describe("キャラプロンプト", () => {
+  it("未指定は空文字列に正規化される", () => {
+    expect(キャラプロンプト.create(undefined).値).toBe("");
+    expect(キャラプロンプト.create(null).値).toBe("");
+  });
+
+  it("上限文字数を超えると検証エラーになる", () => {
+    expect(() => キャラプロンプト.create("あ".repeat(20001))).toThrow(検証エラー);
+    expect(キャラプロンプト.create("あ".repeat(20000)).値.length).toBe(20000);
+  });
+});
+
+describe("行動パターンメモ", () => {
+  it("未指定は空文字列に正規化される", () => {
+    expect(行動パターンメモ.create(undefined).値).toBe("");
+  });
+
+  it("上限文字数を超えると検証エラーになる", () => {
+    expect(() => 行動パターンメモ.create("あ".repeat(4001))).toThrow(検証エラー);
+  });
+});
+
+describe("アイコンDataUrl", () => {
+  it("未指定・空文字は空文字列（アイコン無し）に正規化される", () => {
+    expect(アイコンDataUrl.create(undefined).値).toBe("");
+    expect(アイコンDataUrl.create("").値).toBe("");
+    expect(アイコンDataUrl.create("   ").値).toBe("");
+  });
+
+  it("data:始まりの文字列を受け入れる", () => {
+    const 値 = "data:image/png;base64,AAAA";
+    expect(アイコンDataUrl.create(値).値).toBe(値);
+  });
+
+  it("data:始まりでない文字列は検証エラーになる", () => {
+    expect(() => アイコンDataUrl.create("https://example.com/icon.png")).toThrow(検証エラー);
   });
 });

@@ -12,3 +12,8 @@ export interface メンバーパス {
 export interface 稼働表明パス {
   name: string;
 }
+
+// キャラもルームに属さない（ワークスペース直下）ため、roomIdを持たない
+export interface キャラパス {
+  name: string;
+}
