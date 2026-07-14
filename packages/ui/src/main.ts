@@ -1,3 +1,4 @@
+import "./Fudabaテーマブリッジ.css";
 import { アプリシェル } from "./アプリシェル/アプリシェル";
 import { 通知サービス } from "./通知サービス";
 import { Relayクライアント } from "./通信/Relayクライアント";
