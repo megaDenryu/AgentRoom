@@ -5,6 +5,8 @@ import websocket from "@fastify/websocket";
 import Fastify, { type FastifyInstance } from "fastify";
 import { WSルートを登録する } from "./api/wsルート.js";
 import { ルートを登録する } from "./api/ルート.js";
+import { オリジンを許可判定する } from "./domain/オリジン許可判定.js";
+import { 自機のIPv4アドレス一覧を取得する } from "./infra/自機IPv4アドレス一覧.js";
 import { メッセージストア } from "./infra/メッセージストア.js";
 import { 新着通知ハブ } from "./infra/新着通知ハブ.js";
 
@@ -39,13 +41,20 @@ export async function AgentRoomサーバーを起動する(
     await app.register(websocket);
 
     // AgentRoomはLAN内の別ホスト・別ポートのアプリ(Jimbo electron-app renderer等)から
-    // 直接fetchされる前提のワークスペースサーバー(参照: 札#35「方針修正」)。インターネット
-    // 公開は想定しないため、認証の代わりにオリジン制限を課す意味は薄く、全オリジン許可の
-    // 単純なCORSヘッダ付与に留める(依存追加を避けるため@fastify/corsは使わずhookで自前実装)
+    // 直接fetchされる前提のワークスペースサーバー(参照: 札#35「方針修正」)。LAN公開のため
+    // 全オリジン許可は悪意あるWebページからのlocalhost読み書きを許す攻撃面になる
+    // (参照: 札#43)。Originヘッダが無いリクエスト(curl・MCP・サーバー間)はブラウザの
+    // CORS機構が関与しないため素通しし、Originがある場合のみ自機由来かを検査する
+    // (依存追加を避けるため@fastify/corsは使わずhookで自前実装)
+    const 許可ホスト一覧 = ["localhost", "127.0.0.1", ...自機のIPv4アドレス一覧を取得する()];
     app.addHook("onRequest", async (request, reply) => {
-      reply.header("Access-Control-Allow-Origin", "*");
-      reply.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-      reply.header("Access-Control-Allow-Headers", "Content-Type");
+      const オリジン = request.headers.origin;
+      if (オリジン !== undefined && オリジンを許可判定する(オリジン, 許可ホスト一覧) === "許可") {
+        reply.header("Access-Control-Allow-Origin", オリジン);
+        reply.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+        reply.header("Access-Control-Allow-Headers", "Content-Type");
+        reply.header("Vary", "Origin");
+      }
       if (request.method === "OPTIONS") {
         reply.code(204).send();
       }
