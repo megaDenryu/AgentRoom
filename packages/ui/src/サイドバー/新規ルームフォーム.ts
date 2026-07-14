@@ -8,6 +8,7 @@ import {
   type I配線可能,
   type TextInputC,
 } from "sengen-ui";
+import type { サイドバー内容 } from "./サイドバー内容";
 import * as styles from "./style.css";
 
 export interface I新規ルームフォーム配線 {
@@ -24,13 +25,13 @@ export class 新規ルームフォーム
   private readonly _配線 = new 配線ポート<I新規ルームフォーム配線>("新規ルームフォーム");
   private readonly _入力: TextInputC;
 
-  constructor() {
+  constructor(文言: サイドバー内容) {
     super();
     this._入力 = textInput({
-      placeholder: "新しいルーム名",
+      placeholder: 文言.新規ルーム名プレースホルダ,
       class: styles.フォーム入力,
     }).onEnterKey(() => this._作成を発火する());
-    this._componentRoot = this._ルートを構築する(this._入力);
+    this._componentRoot = this._ルートを構築する(this._入力, 文言);
   }
 
   配線する(配線: I新規ルームフォーム配線): this {
@@ -38,11 +39,11 @@ export class 新規ルームフォーム
     return this;
   }
 
-  private _ルートを構築する(入力: TextInputC): DivC {
+  private _ルートを構築する(入力: TextInputC, 文言: サイドバー内容): DivC {
     return (
       div({ class: styles.フォーム行 }).childs([
           入力,
-          button({ text: "作成", class: styles.フォームボタン }).onClick(() =>
+          button({ text: 文言.新規ルーム作成ボタン, class: styles.フォームボタン }).onClick(() =>
             this._作成を発火する(),
           )])
     );

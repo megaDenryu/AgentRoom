@@ -20,3 +20,9 @@ export const ナビ選択状態 = {
   attribute: "data-nav-selected",
   value: { 選択: "true", 非選択: "false" },
 } as const;
+
+// 表示言語シートの選択中ロケール表示(Fudaba札#47)
+export const 言語選択状態 = {
+  attribute: "data-locale-selected",
+  value: { 選択: "true", 非選択: "false" },
+} as const;

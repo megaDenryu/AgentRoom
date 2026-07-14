@@ -2,6 +2,7 @@ import { div, img, span, DivC, 配線ポート, type I配線可能 } from "senge
 import type { キャラ稼働合成 } from "../../キャラ/キャラ稼働合成";
 import { キャラ種別色を返す } from "../../キャラ種別配色";
 import { 稼働状況色を返す } from "../../稼働状況配色";
+import type { キャラ一覧内容 } from "./キャラ一覧内容";
 import * as styles from "./style.css";
 
 export interface Iキャラ項目行配線 {
@@ -13,7 +14,7 @@ export interface Iキャラ項目行配線 {
 export class キャラ項目行 extends DivC implements I配線可能<Iキャラ項目行配線> {
   private readonly _配線 = new 配線ポート<Iキャラ項目行配線>("キャラ項目行");
 
-  constructor(合成: キャラ稼働合成) {
+  constructor(合成: キャラ稼働合成, 文言: キャラ一覧内容) {
     super({ class: styles.項目 });
     const { キャラ, 稼働状態, 参加ルーム一覧 } = 合成;
     const 稼働色 = 稼働状態 !== null ? 稼働状況色を返す(稼働状態) : "transparent";
@@ -29,16 +30,13 @@ export class キャラ項目行 extends DivC implements I配線可能<Iキャラ
                 {
                   If: 稼働状態 !== null,
                   True: () => span({ text: 稼働状態 ?? "", class: styles.稼働バッジ }),
-                  False: () => span({ text: "未申告", class: styles.未申告バッジ }),
+                  False: () => span({ text: 文言.未申告バッジ, class: styles.未申告バッジ }),
                 }]),
             div({ class: styles.行動メモ, text: キャラ.行動パターンメモ }),
             {
               If: 参加ルーム一覧.length > 0,
               True: () =>
-                span({
-                  text: `参加中のルーム: ${参加ルーム一覧.join(", ")}`,
-                  class: styles.参加ルーム行,
-                }),
+                span({ text: 文言.参加ルーム行(参加ルーム一覧), class: styles.参加ルーム行 }),
             }])]);
   }
 

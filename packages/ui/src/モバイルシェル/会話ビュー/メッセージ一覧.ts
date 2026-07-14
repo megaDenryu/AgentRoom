@@ -1,4 +1,5 @@
 import { div, LV2HtmlComponentBase, type DivC } from "sengen-ui";
+import type { 会話内容 } from "./会話内容";
 import { メッセージ一覧内側 } from "./メッセージ一覧内側";
 import type { メッセージ行 } from "./メッセージ行";
 import { 新着ジャンプボタン } from "./新着ジャンプボタン";
@@ -11,12 +12,14 @@ import * as styles from "./style.css";
 export class メッセージ一覧 extends LV2HtmlComponentBase {
   protected _componentRoot: DivC;
   private readonly _一覧 = new メッセージ一覧内側();
-  private readonly _ジャンプ = new 新着ジャンプボタン();
+  private readonly _ジャンプ: 新着ジャンプボタン;
+
   private _自動追従中 = true;
   private _未読件数 = 0;
 
-  constructor() {
+  constructor(文言: 会話内容) {
     super();
+    this._ジャンプ = new 新着ジャンプボタン(文言);
     this._componentRoot = this._ルートを構築する(this._一覧, this._ジャンプ);
   }
 

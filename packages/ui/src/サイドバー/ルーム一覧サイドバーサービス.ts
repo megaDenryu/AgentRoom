@@ -1,12 +1,14 @@
 import type { Relayクライアント } from "../通信/Relayクライアント";
 import { 送信者名を読み込む } from "../送信者名記憶";
+import { 現在ロケールを取得する } from "../文言/現在ロケール";
 import { メンバー一覧領域 } from "./メンバー一覧領域";
 import { メンバー項目View } from "./メンバー項目View";
 import { メンバー見出しラベル } from "./メンバー見出しラベル";
 import { ルーム一覧サイドバー部品 } from "./ルーム一覧サイドバー部品";
 import { ルーム一覧領域 } from "./ルーム一覧領域";
-import { ルームIDが妥当か, ルームID不正時のメッセージ } from "./ルームID検証";
+import { ルームIDが妥当か, ルームID不正時のメッセージを返す } from "./ルームID検証";
 import { ルーム項目View } from "./ルーム項目View";
+import type { サイドバー内容 } from "./サイドバー内容";
 import { 状態表示ラベル } from "./状態表示ラベル";
 
 // ルーム一覧サイドバーのロジック層。ルーム一覧・メンバー台帳のAPI呼び出しと
@@ -21,6 +23,7 @@ export class ルーム一覧サイドバーサービス {
     private readonly _メンバー一覧: メンバー一覧領域,
     private readonly _メンバー見出し: メンバー見出しラベル,
     private readonly _状態表示: 状態表示ラベル,
+    private readonly _文言: サイドバー内容,
     private readonly _onルーム選択: (ルームID: string) => void,
     private readonly _onメンバー選択: (名前: string) => void,
   ) {}
@@ -42,7 +45,7 @@ export class ルーム一覧サイドバーサービス {
       const 一覧 = await this._クライアント.ルーム一覧を取得する(送信者名を読み込む());
       this._ルーム一覧.全件を差し替える(
         一覧.map((概要) =>
-          new ルーム項目View(概要).配線する({
+          new ルーム項目View(概要, this._文言).配線する({
             on選択: () => this._onルーム選択(概要.ルームID),
           }),
         ),
@@ -52,7 +55,7 @@ export class ルーム一覧サイドバーサービス {
       this._状態表示.クリアする();
     } catch (エラー) {
       this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : "ルーム一覧の取得に失敗しました",
+        エラー instanceof Error ? エラー.message : this._文言.一覧取得失敗,
       );
     }
   }
@@ -73,7 +76,7 @@ export class ルーム一覧サイドバーサービス {
   // ルーム作成 = 自分（現在の送信者名・種別human）をそのルームにメンバー登録する
   async ルームを作成する(ルームID: string): Promise<void> {
     if (!ルームIDが妥当か(ルームID)) {
-      this._状態表示.エラーを表示する(ルームID不正時のメッセージ);
+      this._状態表示.エラーを表示する(ルームID不正時のメッセージを返す(現在ロケールを取得する()));
       return;
     }
     try {
@@ -88,14 +91,14 @@ export class ルーム一覧サイドバーサービス {
       await this.更新する();
     } catch (エラー) {
       this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : "ルームの作成に失敗しました",
+        エラー instanceof Error ? エラー.message : this._文言.作成失敗,
       );
     }
   }
 
   async メンバーを追加する(名前: string, 種別: string): Promise<void> {
     if (this._選択中ルームID === null) {
-      this._状態表示.エラーを表示する("先にルームを選択してください");
+      this._状態表示.エラーを表示する(this._文言.ルーム未選択エラー);
       return;
     }
     try {
@@ -109,7 +112,7 @@ export class ルーム一覧サイドバーサービス {
       await this._メンバー一覧を更新する();
     } catch (エラー) {
       this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : "メンバー追加に失敗しました",
+        エラー instanceof Error ? エラー.message : this._文言.メンバー追加失敗,
       );
     }
   }
@@ -125,7 +128,7 @@ export class ルーム一覧サイドバーサービス {
       await this._メンバー一覧を更新する();
     } catch (エラー) {
       this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : "メンバー削除に失敗しました",
+        エラー instanceof Error ? エラー.message : this._文言.メンバー削除失敗,
       );
     }
   }
@@ -135,7 +138,7 @@ export class ルーム一覧サイドバーサービス {
     const メンバー = await this._クライアント.メンバー一覧を取得する(this._選択中ルームID);
     this._メンバー一覧.全件を差し替える(
       メンバー.map((一人) =>
-        new メンバー項目View(一人).配線する({
+        new メンバー項目View(一人, this._文言).配線する({
           on選択: () => this._onメンバー選択(一人.名前),
           on削除: () => void this.メンバーを削除する(一人.名前),
         }),

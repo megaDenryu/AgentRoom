@@ -1,15 +1,16 @@
 import { div, span, DivC, 配線ポート, type I配線可能 } from "sengen-ui";
 import type { ルーム概要DTO } from "../../通信/メッセージ型";
+import type { ルーム一覧内容 } from "./ルーム一覧内容";
 import * as styles from "./style.css";
 
 export interface Iルーム項目行配線 {
   on選択(): void;
 }
 
-function 最終送信時刻表示(最終送信時刻ISO: string): string {
+function 最終送信時刻表示(最終送信時刻ISO: string, 日時ロケール: string): string {
   const 日時 = new Date(最終送信時刻ISO);
   if (Number.isNaN(日時.getTime())) return 最終送信時刻ISO;
-  return 日時.toLocaleString("ja-JP", {
+  return 日時.toLocaleString(日時ロケール, {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
@@ -22,7 +23,7 @@ function 最終送信時刻表示(最終送信時刻ISO: string): string {
 export class ルーム項目行 extends DivC implements I配線可能<Iルーム項目行配線> {
   private readonly _配線 = new 配線ポート<Iルーム項目行配線>("ルーム項目行");
 
-  constructor(概要: ルーム概要DTO) {
+  constructor(概要: ルーム概要DTO, 文言: ルーム一覧内容) {
     super({ class: styles.項目 });
     this.onClick(() => this._配線.先.on選択()).childs([
       div({ class: styles.項目見出し行 }).childs([
@@ -33,7 +34,10 @@ export class ルーム項目行 extends DivC implements I配線可能<Iルーム
             False: { attr: "data-visible", value: "false" },
           })]),
       span({
-        text: `${概要.メッセージ数}件 / 最終 ${最終送信時刻表示(概要.最終送信時刻)}`,
+        text: 文言.項目メタ(
+          概要.メッセージ数,
+          最終送信時刻表示(概要.最終送信時刻, 文言.日時ロケール),
+        ),
         class: styles.メタ,
       })]);
   }

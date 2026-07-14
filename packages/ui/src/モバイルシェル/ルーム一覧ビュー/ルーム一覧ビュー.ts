@@ -7,13 +7,16 @@ import {
   type DivC,
   type I配線可能,
 } from "sengen-ui";
-import { 追加アイコン } from "../../アイコン";
+import { 言語アイコン, 追加アイコン } from "../../アイコン";
 import type { Relayクライアント } from "../../通信/Relayクライアント";
 import { 表示モードを切り替える } from "../../表示モード切替";
+import { 現在ロケールを取得する } from "../../文言/現在ロケール";
 import { エラー表示ラベル } from "../エラー表示ラベル";
 import * as 共有styles from "../style.css";
 import { 画面表示状態 } from "../状態";
 import type { ボトムシート } from "../ボトムシート";
+import { 表示言語シート内容 } from "../表示言語シート内容";
+import { ルーム一覧内容を取得する } from "./ルーム一覧内容";
 import { ルーム一覧ビューサービス } from "./ルーム一覧ビューサービス";
 import { ルーム一覧領域 } from "./ルーム一覧領域";
 import * as styles from "./style.css";
@@ -33,17 +36,22 @@ export class ルーム一覧ビュー
 {
   protected _componentRoot: DivC;
   private readonly _配線 = new 配線ポート<Iルーム一覧ビュー配線>("ルーム一覧ビュー");
-  private readonly _リスト = new ルーム一覧領域();
+  private readonly _文言 = ルーム一覧内容を取得する(現在ロケールを取得する());
+  private readonly _リスト = new ルーム一覧領域(this._文言);
   private readonly _エラー表示 = new エラー表示ラベル();
   private readonly _サービス: ルーム一覧ビューサービス;
 
-  constructor(クライアント: Relayクライアント, ボトムシート: ボトムシート) {
+  constructor(
+    クライアント: Relayクライアント,
+    private readonly _ボトムシート: ボトムシート,
+  ) {
     super();
     this._サービス = new ルーム一覧ビューサービス(
       クライアント,
-      ボトムシート,
+      _ボトムシート,
       this._リスト,
       this._エラー表示,
+      this._文言,
       (ルームID) => this._配線.先.onルーム選択(ルームID),
     );
     this._componentRoot = this._ルートを構築する();
@@ -66,14 +74,18 @@ export class ルーム一覧ビュー
         .setAttribute(画面表示状態.attribute, 画面表示状態.value.表示)
         .childs([
             div({ class: styles.ヘッダ }).childs([
-                span({ text: "ルーム一覧", class: styles.タイトル }),
-                button({ text: "更新", class: styles.更新ボタン }).onClick(
-                  () => void this._サービス.更新する(),
-                )]),
+                span({ text: this._文言.タイトル, class: styles.タイトル }),
+                div({ class: 共有styles.ヘッダボタン列 }).childs([
+                    button({ class: 共有styles.言語ボタン })
+                        .child(言語アイコン(16, "currentColor"))
+                        .onClick(() => this._ボトムシート.開く(new 表示言語シート内容())),
+                    button({ text: this._文言.更新ボタン, class: styles.更新ボタン }).onClick(
+                      () => void this._サービス.更新する(),
+                    )])]),
             this._エラー表示,
             this._リスト,
             div({ class: styles.フッタリンク }).child(
-                button({ text: "PC版で開く", class: styles.フッタリンクボタン }).onClick(
+                button({ text: this._文言.PC版で開くボタン, class: styles.フッタリンクボタン }).onClick(
                   () => 表示モードを切り替える("desktop"),
                 )),
             button({ class: styles.新規作成FAB })

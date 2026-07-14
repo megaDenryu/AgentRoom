@@ -1,6 +1,7 @@
 import {
   button,
   div,
+  select,
   span,
   LV2部品集約Base,
   配線ポート,
@@ -9,11 +10,14 @@ import {
 } from "sengen-ui";
 import type { Relayクライアント } from "../通信/Relayクライアント";
 import { 表示モードを切り替える } from "../表示モード切替";
+import { 現在ロケールを取得する, ロケールを保存する } from "../文言/現在ロケール";
+import { ロケール一覧, ロケール値か, ロケール表示名 } from "../文言/ロケール";
 import { メンバー一覧領域 } from "./メンバー一覧領域";
 import { メンバー見出しラベル } from "./メンバー見出しラベル";
 import { ルーム一覧サイドバーサービス } from "./ルーム一覧サイドバーサービス";
 import { ルーム一覧サイドバー部品 } from "./ルーム一覧サイドバー部品";
 import { ルーム一覧領域 } from "./ルーム一覧領域";
+import { サイドバー内容を取得する } from "./サイドバー内容";
 import { 状態表示ラベル } from "./状態表示ラベル";
 import { 通知状態ラベル } from "./通知状態ラベル";
 import * as styles from "./style.css";
@@ -36,17 +40,18 @@ export class ルーム一覧サイドバー
 {
   protected _componentRoot: DivC;
   private readonly _配線 = new 配線ポート<Iルーム一覧サイドバー配線>("ルーム一覧サイドバー");
+  private readonly _文言 = サイドバー内容を取得する(現在ロケールを取得する());
   private readonly _部品: ルーム一覧サイドバー部品;
-  private readonly _ルーム一覧 = new ルーム一覧領域();
-  private readonly _メンバー一覧 = new メンバー一覧領域();
-  private readonly _メンバー見出し = new メンバー見出しラベル();
+  private readonly _ルーム一覧 = new ルーム一覧領域(this._文言);
+  private readonly _メンバー一覧 = new メンバー一覧領域(this._文言);
+  private readonly _メンバー見出し = new メンバー見出しラベル(this._文言);
   private readonly _状態表示 = new 状態表示ラベル();
   private readonly _通知状態 = new 通知状態ラベル();
   private readonly _サービス: ルーム一覧サイドバーサービス;
 
   constructor(クライアント: Relayクライアント) {
     super();
-    this._部品 = ルーム一覧サイドバー部品.作る(クライアント);
+    this._部品 = ルーム一覧サイドバー部品.作る(クライアント, this._文言);
     this._サービス = new ルーム一覧サイドバーサービス(
       クライアント,
       this._部品,
@@ -54,6 +59,7 @@ export class ルーム一覧サイドバー
       this._メンバー一覧,
       this._メンバー見出し,
       this._状態表示,
+      this._文言,
       (ルームID) => this._配線.先.onルーム選択(ルームID),
       (名前) => this._配線.先.onメンバー選択(名前),
     );
@@ -72,11 +78,26 @@ export class ルーム一覧サイドバー
     部品: ルーム一覧サイドバー部品,
     サービス: ルーム一覧サイドバーサービス,
   ): DivC {
+    // 表示言語切替(Fudaba札#47)。選択→保存→再読み込みで反映する
+    // (文言/現在ロケール.ts参照。動的な購読・再描画は非対応の設計方針)
+    const 言語セレクト = select({
+      options: ロケール一覧.map((候補) => ({
+        value: 候補,
+        text: ロケール表示名[候補],
+        selected: 候補 === 現在ロケールを取得する(),
+      })),
+      class: styles.言語セレクト,
+    }).onSelectChange(() => {
+      const 選択値 = 言語セレクト.getValue();
+      if (!ロケール値か(選択値)) return;
+      ロケールを保存する(選択値);
+      window.location.reload();
+    });
     return (
       div({ class: styles.ルート }).childs([
           div({ class: styles.ヘッダ }).childs([
-              span({ text: "ルーム一覧", class: styles.タイトル }),
-              button({ text: "更新", class: styles.更新ボタン }).onClick(
+              span({ text: this._文言.タイトル, class: styles.タイトル }),
+              button({ text: this._文言.更新ボタン, class: styles.更新ボタン }).onClick(
                 () => void サービス.更新する(),
               )]),
           部品.新規ルームフォーム.配線する({
@@ -90,13 +111,15 @@ export class ルーム一覧サイドバー
           }),
           this._メンバー一覧,
           部品.稼働状況パネル,
-          button({ text: "通知を有効化", class: styles.通知ボタン }).onClick(() =>
+          button({ text: this._文言.通知有効化ボタン, class: styles.通知ボタン }).onClick(() =>
             this._配線.先.on通知有効化(),
           ),
           this._通知状態,
-          button({ text: "スマホ表示に切り替える", class: styles.表示切替ボタン }).onClick(
-            () => 表示モードを切り替える("mobile"),
-          )])
+          button({
+            text: this._文言.表示切替ボタン,
+            class: styles.表示切替ボタン,
+          }).onClick(() => 表示モードを切り替える("mobile")),
+          言語セレクト])
     );
   }
 

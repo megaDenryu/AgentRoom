@@ -1,4 +1,5 @@
 import { button, span, DivC, 配線ポート, type I配線可能 } from "sengen-ui";
+import type { ルームタブ内容 } from "./ルームタブ内容";
 import * as styles from "./style.css";
 
 export interface Iフィルタバナー配線 {
@@ -10,7 +11,7 @@ export interface Iフィルタバナー配線 {
 export class フィルタバナー extends DivC implements I配線可能<Iフィルタバナー配線> {
   private readonly _配線 = new 配線ポート<Iフィルタバナー配線>("フィルタバナー");
 
-  constructor() {
+  constructor(private readonly _文言: ルームタブ内容) {
     super({ class: styles.フィルタバナー });
     this.setAttribute("data-visible", "false");
   }
@@ -22,9 +23,9 @@ export class フィルタバナー extends DivC implements I配線可能<Iフィ
 
   表示する(相手名: string): this {
     this.clearChildren().childs([
-      span({ text: `「${相手名}」との1対1の会話だけを表示しています` }),
-      button({ text: "解除", class: styles.フィルタ解除ボタン }).onClick(() =>
-        this._配線.先.on解除(),
+      span({ text: this._文言.フィルタ中案内(相手名) }),
+      button({ text: this._文言.フィルタ解除ボタン, class: styles.フィルタ解除ボタン }).onClick(
+        () => this._配線.先.on解除(),
       )]);
     this.setAttribute("data-visible", "true");
     return this;

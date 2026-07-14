@@ -48,3 +48,15 @@ export const 追加アイコン = (size = 20, color = "currentColor") =>
     color,
     paths: ["M5 12h14", "M12 5v14"],
   });
+
+// Lucide "globe" 相当。表示言語切替の導線に使う(Fudaba札#47)
+export const 言語アイコン = (size = 20, color = "currentColor") =>
+  icon({
+    size,
+    color,
+    paths: [
+      "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z",
+      "M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10Z",
+      "M2 12h20",
+    ],
+  });

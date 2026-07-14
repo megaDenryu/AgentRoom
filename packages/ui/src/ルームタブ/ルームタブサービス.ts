@@ -7,6 +7,7 @@ import { 既読送信サービス } from "./既読送信サービス";
 import { メンバー同期サービス } from "./メンバー同期サービス";
 import type { ルームタブ状態 } from "./ルームタブ状態";
 import type { ルームタブ部品 } from "./ルームタブ部品";
+import type { ルームタブ内容 } from "./ルームタブ内容";
 import type { 送信内容 } from "./送信フォーム";
 import { タイムライン反映サービス } from "./タイムライン反映サービス";
 
@@ -25,6 +26,7 @@ export class ルームタブサービス {
     private readonly _部品: ルームタブ部品,
     private readonly _クライアント: Relayクライアント,
     通知: 通知サービス,
+    private readonly _文言: ルームタブ内容,
   ) {
     this._既読送信 = new 既読送信サービス(_ルームID, _状態, _部品, _クライアント);
     this._タイムライン反映 = new タイムライン反映サービス(
@@ -32,6 +34,7 @@ export class ルームタブサービス {
       _状態,
       _部品,
       通知,
+      this._文言,
       () => this._自分の名前(),
       () => this._既読送信.予約する(),
     );
@@ -50,6 +53,7 @@ export class ルームタブサービス {
     部品: ルームタブ部品;
     クライアント: Relayクライアント;
     通知: 通知サービス;
+    文言: ルームタブ内容;
   }): ルームタブサービス {
     return new ルームタブサービス(
       依存.ルームID,
@@ -57,6 +61,7 @@ export class ルームタブサービス {
       依存.部品,
       依存.クライアント,
       依存.通知,
+      依存.文言,
     );
   }
 
@@ -91,7 +96,7 @@ export class ルームタブサービス {
       this._部品.タイムライン.最下部へ移動する();
     } catch (エラー) {
       this._部品.送信フォーム.エラーを表示する(
-        エラー instanceof Error ? エラー.message : "送信に失敗しました",
+        エラー instanceof Error ? エラー.message : this._文言.送信失敗,
       );
     } finally {
       this._部品.送信フォーム.送信中にする(false);

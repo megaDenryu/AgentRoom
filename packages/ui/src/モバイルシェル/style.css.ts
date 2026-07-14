@@ -1,6 +1,6 @@
 import { globalStyle, keyframes, style } from "@vanilla-extract/css";
 import { AgentRoomテーマ配色, AgentRoom警告色 } from "../テーマ";
-import { シート表示状態, ナビ選択状態, 画面表示状態 } from "./状態";
+import { シート表示状態, ナビ選択状態, 言語選択状態, 画面表示状態 } from "./状態";
 
 const 開花 = keyframes({
   "0%": { transform: "translateX(-50%) scale(0)", opacity: 0 },
@@ -166,4 +166,62 @@ export const エラー表示 = style({
   padding: "4px 16px",
   flexShrink: 0,
   ":empty": { display: "none" },
+});
+
+// ヘッダ右側のボタン群(言語切替+更新等)を横並びにする
+export const ヘッダボタン列 = style({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+});
+
+// 表示言語切替の導線(ルーム一覧ビューのヘッダに置くチップボタン。Fudaba札#47)
+export const 言語ボタン = style({
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+  borderRadius: "8px",
+  backgroundColor: AgentRoomテーマ配色.パネル表面,
+  color: AgentRoomテーマ配色.テキスト副,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "32px",
+  height: "32px",
+  cursor: "pointer",
+});
+
+export const 言語シート本体 = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+});
+
+export const 言語シート見出し = style({
+  fontSize: "15px",
+  fontWeight: 700,
+  marginBottom: "4px",
+});
+
+export const 言語選択行 = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+});
+
+export const 言語選択ボタン = style({
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+  borderRadius: "10px",
+  backgroundColor: AgentRoomテーマ配色.パネル背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
+  fontSize: "15px",
+  fontWeight: 600,
+  padding: "0 16px",
+  height: "48px",
+  textAlign: "left",
+  cursor: "pointer",
+});
+
+globalStyle(`${言語選択ボタン}[${言語選択状態.attribute}="${言語選択状態.value.選択}"]`, {
+  borderColor: AgentRoomテーマ配色.ブルー,
+  color: AgentRoomテーマ配色.ブルー,
+  backgroundColor: AgentRoomテーマ配色.アクティブ背景,
 });

@@ -9,7 +9,9 @@ import {
 } from "sengen-ui";
 import { 戻るアイコン } from "../../アイコン";
 import type { Relayクライアント } from "../../通信/Relayクライアント";
+import { 現在ロケールを取得する } from "../../文言/現在ロケール";
 import type { ボトムシート } from "../ボトムシート";
+import { 会話内容を取得する } from "./会話内容";
 import { 会話ビュー部品 } from "./会話ビュー部品";
 import { 会話ビューサービス } from "./会話ビューサービス";
 import * as styles from "./style.css";
@@ -36,12 +38,14 @@ export class 会話ビュー
     ボトムシート: ボトムシート,
   ) {
     super();
-    this._部品 = 会話ビュー部品.作る();
+    const 文言 = 会話内容を取得する(現在ロケールを取得する());
+    this._部品 = 会話ビュー部品.作る(文言);
     this._サービス = 会話ビューサービス.作る({
       ルームID: this._ルームID,
       部品: this._部品,
       クライアント,
       ボトムシート,
+      文言,
     });
     this._componentRoot = this._ルートを構築する(this._部品, this._サービス);
     this._サービス.開始する();

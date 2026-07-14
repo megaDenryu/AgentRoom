@@ -17,6 +17,7 @@ import {
 import { キャラ種別一覧, type キャラDTO } from "../../通信/キャラ型";
 import { エラー表示ラベル } from "../エラー表示ラベル";
 import { キャラアイコン入力 } from "./キャラアイコン入力";
+import type { キャラ一覧内容 } from "./キャラ一覧内容";
 import * as styles from "./style.css";
 
 export interface キャラ入力 {
@@ -42,18 +43,22 @@ export class キャラシート内容
   private readonly _配線 = new 配線ポート<Iキャラシート内容配線>("キャラシート内容");
   private readonly _名前入力: TextInputC;
   private readonly _種別セレクト: SelectC;
-  private readonly _アイコン入力 = new キャラアイコン入力();
+  private readonly _アイコン入力: キャラアイコン入力;
   private readonly _プロンプト入力: TextAreaC;
   private readonly _行動パターン入力: TextAreaC;
   private readonly _エラー表示 = new エラー表示ラベル();
   private readonly _保存ボタン: ButtonC;
   private readonly _既存名: string | null;
 
-  constructor(既存?: キャラDTO) {
+  constructor(
+    private readonly _文言: キャラ一覧内容,
+    既存?: キャラDTO,
+  ) {
     super();
     this._既存名 = 既存?.名前 ?? null;
+    this._アイコン入力 = new キャラアイコン入力(_文言.アイコンalt);
     this._名前入力 = textInput({
-      placeholder: "キャラ名",
+      placeholder: _文言.名前プレースホルダ,
       value: 既存?.名前 ?? "",
       disabled: 既存 !== undefined,
       class: styles.入力,
@@ -67,13 +72,13 @@ export class キャラシート内容
       class: styles.セレクト,
     });
     this._プロンプト入力 = textarea({
-      placeholder: "プロンプト",
+      placeholder: _文言.プロンプトプレースホルダ,
       value: 既存?.プロンプト ?? "",
       rows: 4,
       class: styles.テキストエリア,
     });
     this._行動パターン入力 = textarea({
-      placeholder: "行動パターンメモ",
+      placeholder: _文言.行動パターンプレースホルダ,
       value: 既存?.行動パターンメモ ?? "",
       rows: 2,
       class: styles.テキストエリア,
@@ -82,7 +87,7 @@ export class キャラシート内容
       this._アイコン入力.値を設定する(既存.アイコンdataUrl);
     }
     this._保存ボタン = button({
-      text: 既存 === undefined ? "作成" : "更新",
+      text: 既存 === undefined ? _文言.保存ボタン作成 : _文言.保存ボタン更新,
       class: styles.保存ボタン,
     }).onClick(() => this._保存を発火する());
     this._componentRoot = this._ルートを構築する();
@@ -105,7 +110,8 @@ export class キャラシート内容
     return (
       div({ class: styles.シート本体 }).childs([
           span({
-            text: this._既存名 === null ? "キャラを作成" : "キャラを編集",
+            text:
+              this._既存名 === null ? this._文言.シート見出し作成 : this._文言.シート見出し編集,
             class: styles.シート見出し,
           }),
           this._名前入力,
@@ -119,7 +125,7 @@ export class キャラシート内容
               {
                 If: this._既存名 !== null,
                 True: () =>
-                  button({ text: "削除", class: styles.削除ボタン }).onClick(() => {
+                  button({ text: this._文言.削除ボタン, class: styles.削除ボタン }).onClick(() => {
                     const 名前 = this._既存名;
                     if (名前 !== null) this._配線.先.on削除(名前);
                   }),
@@ -130,7 +136,7 @@ export class キャラシート内容
   private _保存を発火する(): void {
     const 名前 = this._名前入力.getValue().trim();
     if (名前.length === 0) {
-      this.エラーを表示する("名前を入力してください");
+      this.エラーを表示する(this._文言.名前必須エラー);
       return;
     }
     this._配線.先.on保存({

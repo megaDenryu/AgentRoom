@@ -7,9 +7,9 @@ export class キャラアイコン入力 extends DivC {
   private _値 = "";
   private readonly _プレビュー: ImgC;
 
-  constructor() {
+  constructor(アイコンalt: string) {
     super({ class: styles.アイコン入力 });
-    this._プレビュー = img({ class: styles.アイコンプレビュー, alt: "キャラアイコン" });
+    this._プレビュー = img({ class: styles.アイコンプレビュー, alt: アイコンalt });
     const ファイル選択 = fileInput({ accept: "image/*", class: styles.ファイル選択 }).onFileSelected(
       (ファイル) => this._ファイルを読み込む(ファイル),
     );

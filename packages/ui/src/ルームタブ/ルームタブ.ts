@@ -1,8 +1,10 @@
 import { div, LV2部品集約Base, type DivC } from "sengen-ui";
 import type { 通知サービス } from "../通知サービス";
 import type { Relayクライアント } from "../通信/Relayクライアント";
+import { 現在ロケールを取得する } from "../文言/現在ロケール";
 import { ルームタブサービス } from "./ルームタブサービス";
 import { ルームタブ状態 } from "./ルームタブ状態";
+import { ルームタブ内容を取得する } from "./ルームタブ内容";
 import { ルームタブ部品 } from "./ルームタブ部品";
 import * as styles from "./style.css";
 
@@ -16,13 +18,15 @@ export class ルームタブ extends LV2部品集約Base<ルームタブ部品, 
   constructor(ルームID: string, クライアント: Relayクライアント, 通知: 通知サービス) {
     super();
     const 状態 = new ルームタブ状態();
-    this._部品 = ルームタブ部品.作る();
+    const 文言 = ルームタブ内容を取得する(現在ロケールを取得する());
+    this._部品 = ルームタブ部品.作る(文言);
     this._サービス = ルームタブサービス.作る({
       ルームID,
       状態,
       部品: this._部品,
       クライアント,
       通知,
+      文言,
     });
     this._componentRoot = this._ルートを構築する(this._部品, this._サービス);
     this._サービス.開始する();

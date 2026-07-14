@@ -319,3 +319,16 @@ export const 表示切替ボタン = style({
   textAlign: "left",
   flexShrink: 0,
 });
+
+// 表示言語切替の控えめなセレクト(サイドバー最下部。Fudaba札#47)
+export const 言語セレクト = style({
+  margin: "0 12px 10px",
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+  borderRadius: "4px",
+  backgroundColor: AgentRoomテーマ配色.パネル表面,
+  color: AgentRoomテーマ配色.パネルテキスト副,
+  padding: "4px 8px",
+  fontSize: "11px",
+  cursor: "pointer",
+  flexShrink: 0,
+});

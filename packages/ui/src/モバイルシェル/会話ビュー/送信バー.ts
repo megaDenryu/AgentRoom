@@ -9,6 +9,7 @@ import {
   type I配線可能,
   type TextAreaC,
 } from "sengen-ui";
+import type { 会話内容 } from "./会話内容";
 import * as styles from "./style.css";
 
 export interface I送信バー配線 {
@@ -25,14 +26,14 @@ export class 送信バー extends LV2HtmlComponentBase implements I配線可能<
   private readonly _本文入力: TextAreaC;
   private readonly _送信ボタン: ButtonC;
 
-  constructor() {
+  constructor(private readonly _文言: 会話内容) {
     super();
     this._本文入力 = textarea({
       rows: 1,
-      placeholder: "メッセージを入力",
+      placeholder: _文言.本文入力プレースホルダ,
       class: styles.本文入力,
     });
-    this._送信ボタン = button({ text: "送信", class: styles.送信ボタン }).onClick(() =>
+    this._送信ボタン = button({ text: _文言.送信ボタン, class: styles.送信ボタン }).onClick(() =>
       this._送信を発火する(),
     );
     this._componentRoot = this._ルートを構築する(this._本文入力, this._送信ボタン);
@@ -54,7 +55,7 @@ export class 送信バー extends LV2HtmlComponentBase implements I配線可能<
   private _ルートを構築する(本文入力: TextAreaC, 送信ボタン: ButtonC): DivC {
     return (
       div({ class: styles.送信バー }).childs([
-          button({ text: "設定", class: styles.設定ボタン }).onClick(() =>
+          button({ text: this._文言.設定ボタン, class: styles.設定ボタン }).onClick(() =>
             this._配線.先.on設定を開く(),
           ),
           本文入力,

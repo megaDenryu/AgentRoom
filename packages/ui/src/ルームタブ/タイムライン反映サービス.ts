@@ -4,6 +4,7 @@ import type { タイムライン項目 } from "./メッセージ一覧領域";
 import { メッセージ行View } from "./メッセージ行View";
 import type { ルームタブ状態 } from "./ルームタブ状態";
 import type { ルームタブ部品 } from "./ルームタブ部品";
+import type { ルームタブ内容 } from "./ルームタブ内容";
 import { 未読区切りView } from "./未読区切りView";
 
 // WS接続時のバックログ再生をデスクトップ通知でスパムしないための「新しさ」判定
@@ -16,6 +17,7 @@ export class タイムライン反映サービス {
     private readonly _状態: ルームタブ状態,
     private readonly _部品: ルームタブ部品,
     private readonly _通知: 通知サービス,
+    private readonly _文言: ルームタブ内容,
     private readonly _自分の名前: () => string,
     private readonly _既読送信を予約する: () => void,
   ) {}
@@ -31,7 +33,7 @@ export class タイムライン反映サービス {
       }
       this._部品.タイムライン.追記する(
         this._行を作る(メッセージ),
-        区切りが必要 ? new 未読区切りView() : null,
+        区切りが必要 ? new 未読区切りView(this._文言) : null,
       );
     }
     const 新しい =
@@ -53,7 +55,7 @@ export class タイムライン反映サービス {
     for (const メッセージ of this._状態.全メッセージ) {
       if (!this._状態.表示対象か(メッセージ)) continue;
       if (!区切り済み && this._状態.未読区切り対象か(メッセージ, 自分)) {
-        項目一覧.push(new 未読区切りView());
+        項目一覧.push(new 未読区切りView(this._文言));
         区切り済み = true;
       }
       項目一覧.push(this._行を作る(メッセージ));
@@ -63,8 +65,10 @@ export class タイムライン反映サービス {
   }
 
   private _行を作る(メッセージ: メッセージDTO): メッセージ行View {
-    return new メッセージ行View(メッセージ, {
-      送信者は人間か: this._状態.メンバー種別.get(メッセージ.送信者) === "human",
-    });
+    return new メッセージ行View(
+      メッセージ,
+      { 送信者は人間か: this._状態.メンバー種別.get(メッセージ.送信者) === "human" },
+      this._文言,
+    );
   }
 }

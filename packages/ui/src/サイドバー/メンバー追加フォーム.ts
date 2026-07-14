@@ -12,6 +12,7 @@ import {
 } from "sengen-ui";
 import { エージェント種別一覧 } from "../通信/メッセージ型";
 import { 候補リストC } from "./候補リストC";
+import type { サイドバー内容 } from "./サイドバー内容";
 import * as styles from "./style.css";
 
 const キャラ候補リストID = "agentroom-メンバー追加フォーム-キャラ候補";
@@ -32,10 +33,10 @@ export class メンバー追加フォーム
   private readonly _種別セレクト: SelectC;
   private readonly _キャラ候補 = new 候補リストC(キャラ候補リストID);
 
-  constructor() {
+  constructor(private readonly _文言: サイドバー内容) {
     super();
     this._名前入力 = textInput({
-      placeholder: "メンバー名",
+      placeholder: _文言.メンバー名プレースホルダ,
       class: styles.フォーム入力,
     })
       .setAttribute("list", キャラ候補リストID)
@@ -66,8 +67,8 @@ export class メンバー追加フォーム
           名前入力,
           キャラ候補,
           種別セレクト,
-          button({ text: "追加", class: styles.フォームボタン }).onClick(() =>
-            this._追加を発火する(),
+          button({ text: this._文言.メンバー追加ボタン, class: styles.フォームボタン }).onClick(
+            () => this._追加を発火する(),
           )])
     );
   }

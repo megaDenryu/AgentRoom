@@ -10,8 +10,10 @@ import {
   type I配線可能,
   type TextInputC,
 } from "sengen-ui";
-import { ルームIDが妥当か, ルームID不正時のメッセージ } from "../../サイドバー/ルームID検証";
+import { ルームIDが妥当か, ルームID不正時のメッセージを返す } from "../../サイドバー/ルームID検証";
+import { 現在ロケールを取得する } from "../../文言/現在ロケール";
 import { エラー表示ラベル } from "../エラー表示ラベル";
+import type { ルーム一覧内容 } from "./ルーム一覧内容";
 import * as styles from "./style.css";
 
 export interface I新規ルームシート内容配線 {
@@ -33,15 +35,16 @@ export class 新規ルームシート内容
   private readonly _エラー表示 = new エラー表示ラベル();
   private readonly _作成ボタン: ButtonC;
 
-  constructor() {
+  constructor(private readonly _文言: ルーム一覧内容) {
     super();
     this._入力 = textInput({
-      placeholder: "新しいルーム名",
+      placeholder: _文言.新規ルーム名プレースホルダ,
       class: styles.新規ルーム入力,
     }).onEnterKey(() => this._作成を試みる());
-    this._作成ボタン = button({ text: "作成", class: styles.新規ルーム作成ボタン }).onClick(() =>
-      this._作成を試みる(),
-    );
+    this._作成ボタン = button({
+      text: _文言.新規ルーム作成ボタン,
+      class: styles.新規ルーム作成ボタン,
+    }).onClick(() => this._作成を試みる());
     this._componentRoot = this._ルートを構築する(this._入力, this._エラー表示, this._作成ボタン);
   }
 
@@ -61,7 +64,7 @@ export class 新規ルームシート内容
   private _ルートを構築する(入力: TextInputC, エラー表示: エラー表示ラベル, 作成ボタン: ButtonC): DivC {
     return (
       div({ class: styles.新規ルームシート }).childs([
-          span({ text: "新しいルームを作成", class: styles.新規ルーム見出し }),
+          span({ text: this._文言.新規ルーム見出し, class: styles.新規ルーム見出し }),
           入力,
           エラー表示,
           作成ボタン])
@@ -72,7 +75,7 @@ export class 新規ルームシート内容
     const ルームID = this._入力.getValue().trim();
     if (ルームID.length === 0) return;
     if (!ルームIDが妥当か(ルームID)) {
-      this._エラー表示.表示する(ルームID不正時のメッセージ);
+      this._エラー表示.表示する(ルームID不正時のメッセージを返す(現在ロケールを取得する()));
       return;
     }
     this._エラー表示.クリアする();

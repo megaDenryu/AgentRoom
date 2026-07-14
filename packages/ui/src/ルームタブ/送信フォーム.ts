@@ -15,6 +15,7 @@ import {
 } from "sengen-ui";
 import { 送信者名を保存する, 送信者名を読み込む } from "../送信者名記憶";
 import { エラーメッセージラベル } from "./エラーメッセージラベル";
+import type { ルームタブ内容 } from "./ルームタブ内容";
 import * as styles from "./style.css";
 
 export interface 送信内容 {
@@ -44,20 +45,20 @@ export class 送信フォーム
   private readonly _送信ボタン: ButtonC;
   private readonly _エラー表示 = new エラーメッセージラベル();
 
-  constructor() {
+  constructor(private readonly _文言: ルームタブ内容) {
     super();
     this._送信者名入力 = textInput({
       value: 送信者名を読み込む(),
-      placeholder: "送信者名",
+      placeholder: _文言.送信者名プレースホルダ,
       class: styles.送信者名入力,
     }).onChange(() => 送信者名を保存する(this.送信者名()));
     this._宛先セレクト = select({
-      options: [{ value: 全員宛の値, text: "全員" }],
+      options: [{ value: 全員宛の値, text: _文言.全員宛ラベル }],
       class: styles.宛先セレクト,
     });
     this._本文入力 = textarea({
       rows: 2,
-      placeholder: "メッセージを入力（Ctrl+Enterで送信）",
+      placeholder: _文言.本文入力プレースホルダ,
       class: styles.本文入力,
     });
     this._本文入力.addTextAreaEventListener("keydown", (イベント) => {
@@ -66,7 +67,7 @@ export class 送信フォーム
         this._送信を発火する();
       }
     });
-    this._送信ボタン = button({ text: "送信", class: styles.送信ボタン }).onClick(() =>
+    this._送信ボタン = button({ text: _文言.送信ボタン, class: styles.送信ボタン }).onClick(() =>
       this._送信を発火する(),
     );
     this._componentRoot = this._ルートを構築する(
@@ -108,8 +109,8 @@ export class 送信フォーム
   宛先候補を更新する(名前一覧: readonly string[]): void {
     const 現在値 = this._宛先セレクト.getValue();
     this._宛先セレクト.setOptions([
-      { value: 全員宛の値, text: "全員" },
-      ...名前一覧.map((名前) => ({ value: 名前, text: `→ ${名前}` })),
+      { value: 全員宛の値, text: this._文言.全員宛ラベル },
+      ...名前一覧.map((名前) => ({ value: 名前, text: this._文言.宛先ラベル(名前) })),
     ]);
     if (現在値 !== 全員宛の値 && 名前一覧.includes(現在値)) {
       this._宛先セレクト.setValue(現在値);
@@ -134,7 +135,7 @@ export class 送信フォーム
     const 本文 = this._本文入力.getValue().trim();
     if (本文.length === 0) return;
     if (送信者.length === 0) {
-      this._エラー表示.表示する("送信者名を入力してください");
+      this._エラー表示.表示する(this._文言.送信者名必須エラー);
       return;
     }
     const 宛先値 = this._宛先セレクト.getValue();

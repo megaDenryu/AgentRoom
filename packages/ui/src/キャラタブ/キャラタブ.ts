@@ -1,5 +1,7 @@
 import { button, div, span, LV2部品集約Base, type DivC } from "sengen-ui";
 import type { Relayクライアント } from "../通信/Relayクライアント";
+import { 現在ロケールを取得する } from "../文言/現在ロケール";
+import { キャラタブ内容を取得する } from "./キャラタブ内容";
 import { キャラタブサービス } from "./キャラタブサービス";
 import { キャラタブ部品 } from "./キャラタブ部品";
 import * as styles from "./style.css";
@@ -9,13 +11,18 @@ import * as styles from "./style.css";
 // 固定タブとして開く(札場タブと同じ単一インスタンス方式。アプリシェルサービス参照)
 export class キャラタブ extends LV2部品集約Base<キャラタブ部品, キャラタブサービス> {
   protected _componentRoot: DivC;
+  private readonly _文言 = キャラタブ内容を取得する(現在ロケールを取得する());
   private readonly _部品: キャラタブ部品;
   private readonly _サービス: キャラタブサービス;
 
   constructor(クライアント: Relayクライアント) {
     super();
-    this._部品 = キャラタブ部品.作る();
-    this._サービス = キャラタブサービス.作る({ クライアント, 部品: this._部品 });
+    this._部品 = キャラタブ部品.作る(this._文言);
+    this._サービス = キャラタブサービス.作る({
+      クライアント,
+      部品: this._部品,
+      文言: this._文言,
+    });
     this._componentRoot = this._ルートを構築する(this._部品, this._サービス);
     void this._サービス.更新する();
   }
@@ -25,8 +32,8 @@ export class キャラタブ extends LV2部品集約Base<キャラタブ部品, 
       div({ class: styles.ルート }).childs([
           div({ class: styles.一覧側 }).childs([
               div({ class: styles.ヘッダ }).childs([
-                  span({ text: "キャラ一覧", class: styles.タイトル }),
-                  button({ text: "更新", class: styles.更新ボタン }).onClick(
+                  span({ text: this._文言.タイトル, class: styles.タイトル }),
+                  button({ text: this._文言.更新ボタン, class: styles.更新ボタン }).onClick(
                     () => void サービス.更新する(),
                   )]),
               部品.状態表示,
