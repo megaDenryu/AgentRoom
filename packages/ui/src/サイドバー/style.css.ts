@@ -243,3 +243,16 @@ export const 通知状態 = style({
   flexShrink: 0,
   ":empty": { display: "none" },
 });
+
+// モバイルシェルへの手動切替リンク（狭幅ブラウザでデスクトップ表示を選んでいる場合の脱出口）
+export const 表示切替ボタン = style({
+  border: "none",
+  background: "none",
+  color: AgentRoomテーマ配色.パネルテキスト薄,
+  fontSize: "11px",
+  textDecoration: "underline",
+  cursor: "pointer",
+  padding: "0 12px 10px",
+  textAlign: "left",
+  flexShrink: 0,
+});

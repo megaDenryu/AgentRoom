@@ -19,3 +19,11 @@ export const 札場アイコン = (size = 20, color = "currentColor") =>
       "M7 7h.01",
     ],
   });
+
+// Lucide "chevron-left" 相当。モバイルシェルの画面遷移「戻る」ボタンに使う
+export const 戻るアイコン = (size = 20, color = "currentColor") =>
+  icon({
+    size,
+    color,
+    paths: ["M15 18 9 12 15 6"],
+  });

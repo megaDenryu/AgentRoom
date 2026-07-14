@@ -8,6 +8,7 @@ import {
   type I配線可能,
 } from "sengen-ui";
 import type { Relayクライアント } from "../通信/Relayクライアント";
+import { 表示モードを切り替える } from "../表示モード切替";
 import { メンバー一覧領域 } from "./メンバー一覧領域";
 import { メンバー見出しラベル } from "./メンバー見出しラベル";
 import { ルーム一覧サイドバーサービス } from "./ルーム一覧サイドバーサービス";
@@ -91,7 +92,10 @@ export class ルーム一覧サイドバー
           button({ text: "通知を有効化", class: styles.通知ボタン }).onClick(() =>
             this._配線.先.on通知有効化(),
           ),
-          this._通知状態])
+          this._通知状態,
+          button({ text: "スマホ表示に切り替える", class: styles.表示切替ボタン }).onClick(
+            () => 表示モードを切り替える("mobile"),
+          )])
     );
   }
 
