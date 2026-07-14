@@ -27,3 +27,11 @@ export const 戻るアイコン = (size = 20, color = "currentColor") =>
     color,
     paths: ["M15 18 9 12 15 6"],
   });
+
+// Lucide "plus" 相当。モバイルのルーム作成FAB等、新規作成の導線に使う
+export const 追加アイコン = (size = 20, color = "currentColor") =>
+  icon({
+    size,
+    color,
+    paths: ["M5 12h14", "M12 5v14"],
+  });

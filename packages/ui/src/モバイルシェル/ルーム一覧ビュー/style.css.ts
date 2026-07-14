@@ -98,3 +98,59 @@ export const フッタリンクボタン = style({
   cursor: "pointer",
   padding: "8px",
 });
+
+// ルーム作成の導線(FAB)。リスト領域と同じ`画面`要素(position:absolute)を
+// 基準に右下へ絶対配置する。下部ナビの上に浮くよう十分な余白を確保する
+export const 新規作成FAB = style({
+  position: "absolute",
+  right: "16px",
+  bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+  width: "56px",
+  height: "56px",
+  borderRadius: "50%",
+  border: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: AgentRoomテーマ配色.ブルー,
+  color: "#ffffff",
+  boxShadow: "0 4px 12px rgba(58, 51, 85, 0.30)",
+  cursor: "pointer",
+});
+
+export const 新規ルームシート = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+});
+
+export const 新規ルーム見出し = style({
+  fontSize: "15px",
+  fontWeight: 700,
+  marginBottom: "4px",
+});
+
+export const 新規ルーム入力 = style({
+  width: "100%",
+  boxSizing: "border-box",
+  padding: "11px 12px",
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+  borderRadius: "10px",
+  fontSize: "16px",
+  fontFamily: AgentRoomテーマ配色.基本フォントファミリ,
+  backgroundColor: AgentRoomテーマ配色.パネル背景,
+  color: AgentRoomテーマ配色.パネルテキスト主,
+});
+
+export const 新規ルーム作成ボタン = style({
+  border: "none",
+  borderRadius: "10px",
+  backgroundColor: AgentRoomテーマ配色.ネイビー,
+  color: "#ffffff",
+  fontSize: "14px",
+  fontWeight: 700,
+  padding: "0 18px",
+  height: "44px",
+  cursor: "pointer",
+  ":disabled": { opacity: 0.5, cursor: "default" },
+});
