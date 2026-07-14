@@ -27,7 +27,7 @@ export class 新規ルームフォーム
   constructor() {
     super();
     this._入力 = textInput({
-      placeholder: "新しいルーム名（英数字 - _）",
+      placeholder: "新しいルーム名",
       class: styles.フォーム入力,
     }).onEnterKey(() => this._作成を発火する());
     this._componentRoot = this._ルートを構築する(this._入力);

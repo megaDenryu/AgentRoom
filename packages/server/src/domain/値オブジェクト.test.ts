@@ -14,10 +14,28 @@ describe("ルームID", () => {
     expect(ルームID.create("dev-room_1").値).toBe("dev-room_1");
   });
 
-  it("URLに安全でない文字を弾く", () => {
+  it("日本語を受け入れる", () => {
+    expect(ルームID.create("テストルーム").値).toBe("テストルーム");
+  });
+
+  it("パス区切り文字を弾く", () => {
     expect(() => ルームID.create("a/b")).toThrow(検証エラー);
-    expect(() => ルームID.create("日本語")).toThrow(検証エラー);
+    expect(() => ルームID.create("a\\b")).toThrow(検証エラー);
+  });
+
+  it("制御文字を弾く", () => {
+    expect(() => ルームID.create("a\nb")).toThrow(検証エラー);
+  });
+
+  it("前後の空白を弾く", () => {
+    expect(() => ルームID.create(" room")).toThrow(検証エラー);
+    expect(() => ルームID.create("room ")).toThrow(検証エラー);
+  });
+
+  it("長さ制約を弾く", () => {
     expect(() => ルームID.create("")).toThrow(検証エラー);
+    expect(() => ルームID.create("あ".repeat(65))).toThrow(検証エラー);
+    expect(ルームID.create("あ".repeat(64)).値.length).toBe(64);
   });
 });
 

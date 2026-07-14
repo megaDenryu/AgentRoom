@@ -1,12 +1,25 @@
-// ルームIDはサーバー側(packages/server の ルームID.create())で、URLパス・SQLiteキー・
-// WSトピック名として安全に使える文字だけに制限されている。ここでは同じ制約を送信前に
-// 判定し、サーバーへ送ってから素の HTTP 400 が返る前にわかりやすい日本語エラーへ
-// 差し替える。制約自体を緩めるものではない(サーバー側の安全設計はそのまま維持する)。
-const ルームID許可パターン = /^[a-zA-Z0-9_-]{1,64}$/;
+// ルームIDはサーバー側(packages/server の ルームID.create())と同じ基準で検証する:
+// 制御文字禁止・前後空白禁止・1〜64文字(コードポイント)・"/""\"禁止(URLパス区切りの実務上のみ)。
+// 日本語を含む任意のUnicode文字列を許容する。ここでは送信前に同じ判定を行い、
+// サーバーへ送ってから素の HTTP 400 が返る前にわかりやすい日本語エラーへ差し替える。
+function 制御文字を含むか(値: string): boolean {
+  for (let 位置 = 0; 位置 < 値.length; 位置 += 1) {
+    const コード = 値.charCodeAt(位置);
+    if (コード <= 0x1f || コード === 0x7f) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export function ルームIDが妥当か(値: string): boolean {
-  return ルームID許可パターン.test(値);
+  const 文字数 = [...値].length;
+  if (文字数 < 1 || 文字数 > 64) return false;
+  if (値 !== 値.trim()) return false;
+  if (制御文字を含むか(値)) return false;
+  if (値.includes("/") || 値.includes("\\")) return false;
+  return true;
 }
 
 export const ルームID不正時のメッセージ =
-  "ルーム名は英数字・ハイフン・アンダースコアのみ、1〜64文字で入力してください";
+  "ルーム名は1〜64文字で入力してください（制御文字・前後の空白・\"/\"\"\\\"は使えません）";

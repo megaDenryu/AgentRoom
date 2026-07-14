@@ -36,7 +36,7 @@ export class 新規ルームシート内容
   constructor() {
     super();
     this._入力 = textInput({
-      placeholder: "新しいルーム名（英数字 - _）",
+      placeholder: "新しいルーム名",
       class: styles.新規ルーム入力,
     }).onEnterKey(() => this._作成を試みる());
     this._作成ボタン = button({ text: "作成", class: styles.新規ルーム作成ボタン }).onClick(() =>
