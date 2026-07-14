@@ -12,6 +12,10 @@ export interface AgentRoomサーバー設定 {
   readonly ポート: number;
   readonly DBパス: string;
   readonly UI配信ディレクトリ: string;
+  // ホスト側(埋め込み先)が、AgentRoomの知らない他住民(Fudaba等)のルートを
+  // 間借りさせるためのフック。AgentRoomはこの関数群の中身を一切知らない
+  // (参照: Jimbo/ARCHITECTURE.md「住民の実装形態」)。
+  readonly 追加ルート登録関数一覧?: readonly ((app: FastifyInstance) => void)[];
 }
 
 // 起動成功時はFastifyインスタンスを返し、呼び出し側(埋め込みホスト)が
@@ -35,6 +39,9 @@ export async function AgentRoomサーバーを起動する(
     await app.register(websocket);
     ルートを登録する(app, { ストア, ハブ });
     WSルートを登録する(app, { ストア, ハブ });
+    for (const 登録する of 設定.追加ルート登録関数一覧 ?? []) {
+      登録する(app);
+    }
 
     // ブラウザUI（packages/ui）のビルド成果物があればルート(/)から静的配信する。
     // distが無くてもサーバー起動は成立させる（UIをビルドしない開発運用を許容する）
