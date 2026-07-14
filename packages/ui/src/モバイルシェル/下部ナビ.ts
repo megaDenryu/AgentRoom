@@ -1,13 +1,6 @@
-import {
-  button,
-  div,
-  span,
-  LV2HtmlComponentBase,
-  配線ポート,
-  type DivC,
-  type I配線可能,
-} from "sengen-ui";
-import { 下部ナビ項目一覧 } from "./ナビ項目一覧";
+import { div, LV2HtmlComponentBase, 配線ポート, type DivC, type I配線可能 } from "sengen-ui";
+import { 下部ナビ項目一覧, ルームナビ項目id } from "./ナビ項目一覧";
+import { ナビ項目ボタン } from "./ナビ項目ボタン";
 import * as styles from "./style.css";
 
 export interface I下部ナビ配線 {
@@ -15,15 +8,22 @@ export interface I下部ナビ配線 {
 }
 
 // 下部固定のタブナビゲーション(LV2素部品)。項目は下部ナビ項目一覧.tsの配列だけで決まるため、
-// 新しいタブは項目を1件追加するだけで増やせる。現状は「ルーム」1件のみなので、選択状態の
-// 出し分けは行わず常時アクティブ表示にしている(2件目が増えたら選択状態管理を足す)
+// 新しいタブは項目を1件追加するだけで増やせる。選択中タブの見た目は選択する(id)で外部
+// (モバイルシェルサービス)から指示された結果を反映するだけで、自身では選択状態を判断しない
 export class 下部ナビ extends LV2HtmlComponentBase implements I配線可能<I下部ナビ配線> {
   protected _componentRoot: DivC;
   private readonly _配線 = new 配線ポート<I下部ナビ配線>("下部ナビ");
+  private readonly _項目一覧: readonly ナビ項目ボタン[];
 
   constructor() {
     super();
-    this._componentRoot = this._ルートを構築する();
+    this._項目一覧 = 下部ナビ項目一覧.map((項目) =>
+      new ナビ項目ボタン(項目).配線する({
+        on選択: () => this._配線.先.on項目選択(項目.id),
+      }),
+    );
+    this._componentRoot = this._ルートを構築する(this._項目一覧);
+    this.選択する(ルームナビ項目id);
   }
 
   配線する(配線: I下部ナビ配線): this {
@@ -31,17 +31,14 @@ export class 下部ナビ extends LV2HtmlComponentBase implements I配線可能<
     return this;
   }
 
-  private _ルートを構築する(): DivC {
-    return (
-      div({ class: styles.下部ナビ }).childs(
-        下部ナビ項目一覧.map((項目) =>
-          button({ class: styles.ナビ項目 })
-            .onClick(() => this._配線.先.on項目選択(項目.id))
-            .childs([
-                div({ class: styles.ナビアイコン枠 }).childs([
-                    項目.アイコン(22, "currentColor"),
-                    div({ class: styles.ナビ開花点 })]),
-                span({ text: 項目.ラベル, class: styles.ナビラベル })])))
-    );
+  選択する(id: string): void {
+    for (const ボタン of this._項目一覧) {
+      if (ボタン.項目id === id) ボタン.選択する();
+      else ボタン.選択解除する();
+    }
+  }
+
+  private _ルートを構築する(項目一覧: readonly ナビ項目ボタン[]): DivC {
+    return div({ class: styles.下部ナビ }).childs(項目一覧);
   }
 }

@@ -1,6 +1,6 @@
 import { globalStyle, keyframes, style } from "@vanilla-extract/css";
 import { AgentRoomテーマ配色, AgentRoom警告色 } from "../テーマ";
-import { シート表示状態, 画面表示状態 } from "./状態";
+import { シート表示状態, ナビ選択状態, 画面表示状態 } from "./状態";
 
 const 開花 = keyframes({
   "0%": { transform: "translateX(-50%) scale(0)", opacity: 0 },
@@ -72,13 +72,19 @@ export const ナビ項目 = style({
   cursor: "pointer",
 });
 
+globalStyle(`${ナビ項目}[${ナビ選択状態.attribute}="${ナビ選択状態.value.選択}"]`, {
+  color: AgentRoomテーマ配色.ブルー,
+});
+
 export const ナビアイコン枠 = style({
   position: "relative",
   display: "flex",
 });
 
 // signature: 富良野=ラベンダー畑を踏まえた「開花」インジケータ。アイコン下の小さな点が
-// マウント時に一度だけ咲く。他の演出は足さず、ここ一箇所に主張を集約する
+// タブが選択されるたびに咲く。他の演出は足さず、ここ一箇所に主張を集約する。
+// 非選択時はdisplay:noneにしておくことで、再選択のたびdisplayの復帰でアニメーションが
+// 再生される(CSSはdisplay:none→復帰でkeyframeアニメーションを再始動する)
 export const ナビ開花点 = style({
   position: "absolute",
   bottom: "-6px",
@@ -88,9 +94,16 @@ export const ナビ開花点 = style({
   borderRadius: "50%",
   backgroundColor: AgentRoomテーマ配色.ブルー,
   transform: "translateX(-50%) scale(0)",
-  opacity: 0,
-  animation: `${開花} 320ms 120ms ease-out forwards`,
+  display: "none",
 });
+
+globalStyle(
+  `${ナビ項目}[${ナビ選択状態.attribute}="${ナビ選択状態.value.選択}"] ${ナビ開花点}`,
+  {
+    display: "block",
+    animation: `${開花} 320ms 120ms ease-out forwards`,
+  },
+);
 
 export const ナビラベル = style({
   fontSize: "11px",

@@ -1,10 +1,12 @@
 import type { Relayクライアント } from "../通信/Relayクライアント";
 import { 会話ビュー } from "./会話ビュー/会話ビュー";
+import { ルームナビ項目id, 札場ナビ項目id } from "./ナビ項目一覧";
 import type { モバイルシェル部品 } from "./モバイルシェル部品";
 import { 画面表示状態 } from "./状態";
 
-// モバイルシェルのロジック層。ルーム一覧⇔会話の画面切替(単一フルスクリーンビューの
-// 差し替え)を担う。会話ビューはWS接続を持つため、離れるときに必ず破棄する
+// モバイルシェルのロジック層。ルーム一覧⇔会話⇔札場の画面切替(単一フルスクリーンビューの
+// 差し替え)を担う。会話ビューはWS接続を持つため、離れるときに必ず破棄する。
+// 下部ナビの選択見た目は、この画面切替に追従させて唯一の真実(現在どの画面か)から反映する
 export class モバイルシェルサービス {
   private _現在の会話ビュー: 会話ビュー | null = null;
 
@@ -26,13 +28,25 @@ export class モバイルシェルサービス {
     this._部品.会話スロット.clearChildren().child(会話);
     this._部品.会話スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.表示);
     this._部品.ルーム一覧ビュー.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
+    this._部品.札場スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
+    this._部品.下部ナビ.選択する(ルームナビ項目id);
   }
 
   一覧へ戻る(): void {
     this._会話ビューを破棄する();
     this._部品.会話スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
     this._部品.ルーム一覧ビュー.setAttribute(画面表示状態.attribute, 画面表示状態.value.表示);
+    this._部品.札場スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
+    this._部品.下部ナビ.選択する(ルームナビ項目id);
     void this._部品.ルーム一覧ビュー.更新する();
+  }
+
+  札場を開く(): void {
+    this._会話ビューを破棄する();
+    this._部品.会話スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
+    this._部品.ルーム一覧ビュー.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
+    this._部品.札場スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.表示);
+    this._部品.下部ナビ.選択する(札場ナビ項目id);
   }
 
   private _会話ビューを破棄する(): void {

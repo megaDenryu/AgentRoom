@@ -13,3 +13,10 @@ export const シート表示状態 = {
   attribute: "data-sheet-visibility",
   value: { 表示: "visible", 非表示: "hidden" },
 } as const;
+
+// 下部ナビの選択中タブ表示切替。選択の唯一の真実はモバイルシェルサービスが持つ現在画面で、
+// 下部ナビはそこから指示された結果をこの属性へ反映するだけ
+export const ナビ選択状態 = {
+  attribute: "data-nav-selected",
+  value: { 選択: "true", 非選択: "false" },
+} as const;
