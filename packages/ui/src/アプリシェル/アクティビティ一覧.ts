@@ -4,3 +4,4 @@ import { アクティビティID } from "vscode-shell-layout";
 // 振る舞い)の双方が同じ定数を参照することで、文字列の不一致による配線漏れを防ぐ
 export const ルームアクティビティ = アクティビティID("ルーム");
 export const 札場アクティビティ = アクティビティID("札場");
+export const キャラアクティビティ = アクティビティID("キャラ");

@@ -1,3 +1,4 @@
+import { キャラDTOか, type キャラDTO } from "./キャラ型";
 import {
   メンバーDTOか,
   ルーム概要DTOか,
@@ -138,5 +139,53 @@ export class Relayクライアント {
       throw new Error("稼働状況の応答が想定外の形式です");
     }
     return 本体;
+  }
+
+  // キャラ(人物)はルームに属さない(ワークスペース直下)ため、URLにルームIDを含まない
+  async キャラ一覧を取得する(): Promise<readonly キャラDTO[]> {
+    const 応答 = await fetch("/api/charas");
+    if (!応答.ok) {
+      throw new Error(`キャラ一覧の取得に失敗しました (HTTP ${応答.status})`);
+    }
+    const 本体: unknown = await 応答.json();
+    if (!Array.isArray(本体) || !本体.every(キャラDTOか)) {
+      throw new Error("キャラ一覧の応答が想定外の形式です");
+    }
+    return 本体;
+  }
+
+  // 既存名なら全項目上書きしてサーバー側で更新する(作成者・作成時刻は初回のまま不変。
+  // packages/server/src/api/キャラルート.ts 参照)。新規名なら作成になる
+  async キャラを登録する(引数: {
+    名前: string;
+    種別: string;
+    作成者: string;
+    プロンプト: string;
+    アイコンdataUrl: string;
+    行動パターンメモ: string;
+  }): Promise<void> {
+    const 応答 = await fetch(`/api/charas/${encodeURIComponent(引数.名前)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        種別: 引数.種別,
+        作成者: 引数.作成者,
+        プロンプト: 引数.プロンプト,
+        アイコンdataUrl: 引数.アイコンdataUrl,
+        行動パターンメモ: 引数.行動パターンメモ,
+      }),
+    });
+    if (!応答.ok) {
+      throw new Error(`キャラの登録に失敗しました (HTTP ${応答.status})`);
+    }
+  }
+
+  async キャラを削除する(名前: string): Promise<void> {
+    const 応答 = await fetch(`/api/charas/${encodeURIComponent(名前)}`, {
+      method: "DELETE",
+    });
+    if (!応答.ok) {
+      throw new Error(`キャラの削除に失敗しました (HTTP ${応答.status})`);
+    }
   }
 }
