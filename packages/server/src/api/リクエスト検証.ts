@@ -54,6 +54,30 @@ export function 既読位置更新内容に絞る(ボディ: unknown): { 読者:
   throw new 検証エラー('ボディは { "読者": string, "連番": number } である必要があります');
 }
 
+export function 稼働表明更新内容に絞る(ボディ: unknown): {
+  状態: string;
+  現在の作業: string | undefined;
+  札ID: number | undefined;
+} {
+  if (
+    typeof ボディ === "object" &&
+    ボディ !== null &&
+    "状態" in ボディ &&
+    typeof ボディ.状態 === "string"
+  ) {
+    const 現在の作業 =
+      "現在の作業" in ボディ && typeof ボディ.現在の作業 === "string"
+        ? ボディ.現在の作業
+        : undefined;
+    const 札ID =
+      "札ID" in ボディ && typeof ボディ.札ID === "number" ? ボディ.札ID : undefined;
+    return { 状態: ボディ.状態, 現在の作業, 札ID };
+  }
+  throw new 検証エラー(
+    'ボディは { "状態": string, "現在の作業"?: string, "札ID"?: number } である必要があります',
+  );
+}
+
 export function 数値クエリを読む(値: string | undefined, デフォルト: number): number {
   if (値 === undefined) return デフォルト;
   const 数値 = Number(値);

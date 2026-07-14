@@ -31,6 +31,15 @@ export interface 未読情報DTO {
   readonly 既読位置: number;
 }
 
+// サーバー側 domain/稼働表明.ts の表示稼働状態値と対応（申告値+TTL経過の「不明」を含む）
+export interface 稼働表明DTO {
+  readonly 名前: string;
+  readonly 状態: "稼働中" | "待機中" | "不明";
+  readonly 現在の作業: string | null;
+  readonly 札ID: number | null;
+  readonly 更新時刻: string;
+}
+
 // サーバー側 domain/エージェント種別.ts の許可値と対応する（メンバー追加フォームの選択肢）
 export const エージェント種別一覧 = [
   "human",
@@ -99,5 +108,25 @@ export function 未読情報DTOか(値: unknown): 値 is 未読情報DTO {
     typeof 値.未読数 === "number" &&
     "既読位置" in 値 &&
     typeof 値.既読位置 === "number"
+  );
+}
+
+const 稼働状態値一覧 = ["稼働中", "待機中", "不明"] as const;
+
+export function 稼働表明DTOか(値: unknown): 値 is 稼働表明DTO {
+  return (
+    typeof 値 === "object" &&
+    値 !== null &&
+    "名前" in 値 &&
+    typeof 値.名前 === "string" &&
+    "状態" in 値 &&
+    typeof 値.状態 === "string" &&
+    稼働状態値一覧.some((候補) => 候補 === 値.状態) &&
+    "現在の作業" in 値 &&
+    (値.現在の作業 === null || typeof 値.現在の作業 === "string") &&
+    "札ID" in 値 &&
+    (値.札ID === null || typeof 値.札ID === "number") &&
+    "更新時刻" in 値 &&
+    typeof 値.更新時刻 === "string"
   );
 }

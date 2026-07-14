@@ -2,9 +2,11 @@ import {
   メンバーDTOか,
   ルーム概要DTOか,
   未読情報DTOか,
+  稼働表明DTOか,
   type メンバーDTO,
   type ルーム概要DTO,
   type 未読情報DTO,
+  type 稼働表明DTO,
 } from "./メッセージ型";
 
 // Relay Server の REST API を叩くクライアント。
@@ -122,5 +124,19 @@ export class Relayクライアント {
     if (!応答.ok) {
       throw new Error(`既読位置の送信に失敗しました (HTTP ${応答.status})`);
     }
+  }
+
+  // 稼働表明はルームに属さない（ワークスペース直下）ため、URLにルームIDを含まない。
+  // 参照: DESIGN.md 11章 Phase B
+  async 稼働一覧を取得する(): Promise<readonly 稼働表明DTO[]> {
+    const 応答 = await fetch("/api/presence");
+    if (!応答.ok) {
+      throw new Error(`稼働状況の取得に失敗しました (HTTP ${応答.status})`);
+    }
+    const 本体: unknown = await 応答.json();
+    if (!Array.isArray(本体) || !本体.every(稼働表明DTOか)) {
+      throw new Error("稼働状況の応答が想定外の形式です");
+    }
+    return 本体;
   }
 }

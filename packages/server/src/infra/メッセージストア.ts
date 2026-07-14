@@ -5,26 +5,33 @@ import type { メッセージ } from "../domain/メッセージ.js";
 import type { メンバー } from "../domain/メンバー.js";
 import type { ルームID } from "../domain/ルームID.js";
 import type { ルーム概要 } from "../domain/ルーム概要.js";
+import type { 参照札ID } from "../domain/参照札ID.js";
 import type { 宛先 } from "../domain/宛先.js";
+import type { 現在の作業内容 } from "../domain/現在の作業内容.js";
+import type { 稼働状態 } from "../domain/稼働状態.js";
+import type { 稼働表明 } from "../domain/稼働表明.js";
 import { データベースを初期化する } from "./データベース初期化.js";
 import { 既読リポジトリ } from "./既読リポジトリ.js";
 import { メッセージリポジトリ } from "./メッセージリポジトリ.js";
 import { メンバーリポジトリ } from "./メンバーリポジトリ.js";
 import { ルーム概要リポジトリ } from "./ルーム概要リポジトリ.js";
+import { 稼働表明リポジトリ } from "./稼働表明リポジトリ.js";
 
 // 永続化の窓口となるファサード。スキーマ初期化・マイグレーションを担い、
-// 実際の読み書きは責務ごとのリポジトリ（メッセージ/メンバー/既読/ルーム概要）に委譲する
+// 実際の読み書きは責務ごとのリポジトリ（メッセージ/メンバー/既読/ルーム概要/稼働表明）に委譲する
 export class メッセージストア {
   private readonly メッセージ: メッセージリポジトリ;
   private readonly メンバー: メンバーリポジトリ;
   private readonly 既読: 既読リポジトリ;
   private readonly ルーム概要: ルーム概要リポジトリ;
+  private readonly 稼働表明: 稼働表明リポジトリ;
 
   private constructor(private readonly db: Database.Database) {
     this.メッセージ = new メッセージリポジトリ(db);
     this.メンバー = new メンバーリポジトリ(db);
     this.既読 = new 既読リポジトリ(db);
     this.ルーム概要 = new ルーム概要リポジトリ(db, this.既読);
+    this.稼働表明 = new 稼働表明リポジトリ(db);
   }
 
   static ファイルから開く(パス: string): メッセージストア {
@@ -87,6 +94,19 @@ export class メッセージストア {
 
   未読数を数える(ルーム: ルームID, 読者: エージェント名): number {
     return this.既読.未読数を数える(ルーム, 読者);
+  }
+
+  稼働を更新する(
+    名前: エージェント名,
+    状態: 稼働状態,
+    現在の作業: 現在の作業内容,
+    参照札: 参照札ID | null,
+  ): 稼働表明 {
+    return this.稼働表明.更新する(名前, 状態, 現在の作業, 参照札);
+  }
+
+  稼働一覧を取得する(): 稼働表明[] {
+    return this.稼働表明.一覧を取得する();
   }
 
   閉じる(): void {

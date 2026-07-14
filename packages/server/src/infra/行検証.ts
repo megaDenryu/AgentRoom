@@ -105,6 +105,38 @@ export function 件数行に絞る(行: unknown): number {
   throw new Error(`件数クエリの行が想定と一致しません: ${JSON.stringify(行)}`);
 }
 
+export function 稼働表明行に絞る(行: unknown): {
+  name: string;
+  status: string;
+  current_work: string | null;
+  card_id: number | null;
+  updated_at: string;
+} {
+  if (
+    typeof 行 === "object" &&
+    行 !== null &&
+    "name" in 行 &&
+    typeof 行.name === "string" &&
+    "status" in 行 &&
+    typeof 行.status === "string" &&
+    "current_work" in 行 &&
+    (行.current_work === null || typeof 行.current_work === "string") &&
+    "card_id" in 行 &&
+    (行.card_id === null || typeof 行.card_id === "number") &&
+    "updated_at" in 行 &&
+    typeof 行.updated_at === "string"
+  ) {
+    return {
+      name: 行.name,
+      status: 行.status,
+      current_work: 行.current_work,
+      card_id: 行.card_id,
+      updated_at: 行.updated_at,
+    };
+  }
+  throw new Error(`presenceテーブルの行がスキーマと一致しません: ${JSON.stringify(行)}`);
+}
+
 export function 既読位置行に絞る(行: unknown): number {
   if (行 === undefined) return 0;
   if (

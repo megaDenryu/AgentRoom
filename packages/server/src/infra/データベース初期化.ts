@@ -29,6 +29,13 @@ export function データベースを初期化する(db: Database.Database): voi
       updated_at TEXT NOT NULL,
       PRIMARY KEY (room_id, reader)
     );
+    CREATE TABLE IF NOT EXISTS presence (
+      name TEXT PRIMARY KEY,
+      status TEXT NOT NULL,
+      current_work TEXT,
+      card_id INTEGER,
+      updated_at TEXT NOT NULL
+    );
   `);
   宛先列を追加する(db);
 }

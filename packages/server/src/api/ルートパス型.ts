@@ -7,3 +7,8 @@ export interface メンバーパス {
   roomId: string;
   name: string;
 }
+
+// 稼働表明はルームに属さない（ワークスペース直下）ため、roomIdを持たない
+export interface 稼働表明パス {
+  name: string;
+}

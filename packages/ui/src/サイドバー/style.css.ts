@@ -244,6 +244,69 @@ export const 通知状態 = style({
   ":empty": { display: "none" },
 });
 
+export const 稼働状況ルート = style({
+  display: "flex",
+  flexDirection: "column",
+  flexShrink: 0,
+  maxHeight: "220px",
+});
+
+export const 稼働状況一覧領域 = style({
+  overflowY: "auto",
+});
+
+export const 稼働状況項目 = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "2px",
+  padding: "6px 12px",
+  borderBottom: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+});
+
+export const 稼働状況名行 = style({
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+});
+
+export const 稼働状況名 = style({
+  fontSize: "12px",
+  fontWeight: 600,
+  overflowWrap: "anywhere",
+  minWidth: 0,
+});
+
+export const 稼働状況バッジ = style({
+  backgroundColor: "var(--presence-status-color, #546e7a)",
+  color: "#ffffff",
+  borderRadius: "3px",
+  padding: "1px 6px",
+  fontSize: "10px",
+  fontWeight: 600,
+  flexShrink: 0,
+});
+
+export const 作業内容テキスト = style({
+  fontSize: "11px",
+  color: AgentRoomテーマ配色.パネルテキスト副,
+  overflowWrap: "anywhere",
+  minWidth: 0,
+});
+
+export const 札バッジ = style({
+  fontSize: "10px",
+  color: AgentRoomテーマ配色.パネルテキスト薄,
+  border: `1px solid ${AgentRoomテーマ配色.パネル境界線}`,
+  borderRadius: "3px",
+  padding: "0 5px",
+  flexShrink: 0,
+});
+
+export const 更新時刻テキスト = style({
+  fontSize: "10px",
+  color: AgentRoomテーマ配色.パネルテキスト薄,
+});
+
 // モバイルシェルへの手動切替リンク（狭幅ブラウザでデスクトップ表示を選んでいる場合の脱出口）
 export const 表示切替ボタン = style({
   border: "none",
