@@ -1,4 +1,5 @@
-import { span, DivC } from "sengen-ui";
+import { div, span, DivC } from "sengen-ui";
+import { キャラアイコン } from "../../アイコン";
 import type { キャラ項目行 } from "./キャラ項目行";
 import * as styles from "./style.css";
 
@@ -12,7 +13,14 @@ export class キャラ一覧領域 extends DivC {
     this.clearChildren().childIfs([
       {
         If: 項目一覧.length === 0,
-        True: () => span({ text: "キャラはまだ登録されていません", class: styles.空表示 }),
+        True: () =>
+          div({ class: styles.空表示 }).childs([
+              div({ class: styles.空表示アイコン枠 }).child(キャラアイコン(24, "currentColor")),
+              span({ text: "キャラはまだ登録されていません", class: styles.空表示見出し }),
+              span({
+                text: "右下の + ボタンから新しいキャラを登録できます",
+                class: styles.空表示キャプション,
+              })]),
       },
       項目一覧]);
     return this;
