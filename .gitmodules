@@ -4,3 +4,6 @@
 [submodule "submodules/VscodeShellLayout"]
 	path = submodules/VscodeShellLayout
 	url = git@github.com:megaDenryu/VscodeShellLayout.git
+[submodule "submodules/Fudaba"]
+	path = submodules/Fudaba
+	url = git@github.com:megaDenryu/Fudaba.git
