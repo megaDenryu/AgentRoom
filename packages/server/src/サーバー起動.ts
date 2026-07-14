@@ -37,6 +37,20 @@ export async function AgentRoomサーバーを起動する(
 
     const app = Fastify({ logger: true });
     await app.register(websocket);
+
+    // AgentRoomはLAN内の別ホスト・別ポートのアプリ(Jimbo electron-app renderer等)から
+    // 直接fetchされる前提のワークスペースサーバー(参照: 札#35「方針修正」)。インターネット
+    // 公開は想定しないため、認証の代わりにオリジン制限を課す意味は薄く、全オリジン許可の
+    // 単純なCORSヘッダ付与に留める(依存追加を避けるため@fastify/corsは使わずhookで自前実装)
+    app.addHook("onRequest", async (request, reply) => {
+      reply.header("Access-Control-Allow-Origin", "*");
+      reply.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+      reply.header("Access-Control-Allow-Headers", "Content-Type");
+      if (request.method === "OPTIONS") {
+        reply.code(204).send();
+      }
+    });
+
     ルートを登録する(app, { ストア, ハブ });
     WSルートを登録する(app, { ストア, ハブ });
     for (const 登録する of 設定.追加ルート登録関数一覧 ?? []) {
