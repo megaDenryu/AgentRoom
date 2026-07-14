@@ -181,6 +181,46 @@ export function キャラ行に絞る(行: unknown): {
   throw new Error(`charasテーブルの行がスキーマと一致しません: ${JSON.stringify(行)}`);
 }
 
+export function 文書索引行に絞る(行: unknown): {
+  id: number;
+  repository: string;
+  path: string;
+  title: string;
+  summary: string | null;
+  registered_at: string;
+  indexed_at: string;
+} {
+  if (
+    typeof 行 === "object" &&
+    行 !== null &&
+    "id" in 行 &&
+    typeof 行.id === "number" &&
+    "repository" in 行 &&
+    typeof 行.repository === "string" &&
+    "path" in 行 &&
+    typeof 行.path === "string" &&
+    "title" in 行 &&
+    typeof 行.title === "string" &&
+    "summary" in 行 &&
+    (行.summary === null || typeof 行.summary === "string") &&
+    "registered_at" in 行 &&
+    typeof 行.registered_at === "string" &&
+    "indexed_at" in 行 &&
+    typeof 行.indexed_at === "string"
+  ) {
+    return {
+      id: 行.id,
+      repository: 行.repository,
+      path: 行.path,
+      title: 行.title,
+      summary: 行.summary,
+      registered_at: 行.registered_at,
+      indexed_at: 行.indexed_at,
+    };
+  }
+  throw new Error(`documentsテーブルの行がスキーマと一致しません: ${JSON.stringify(行)}`);
+}
+
 export function 既読位置行に絞る(行: unknown): number {
   if (行 === undefined) return 0;
   if (

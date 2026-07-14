@@ -11,6 +11,11 @@ import type { ルームID } from "../domain/ルームID.js";
 import type { ルーム概要 } from "../domain/ルーム概要.js";
 import type { 参照札ID } from "../domain/参照札ID.js";
 import type { 宛先 } from "../domain/宛先.js";
+import type { 文書概要 } from "../domain/文書概要.js";
+import type { 文書索引エントリ } from "../domain/文書索引エントリ.js";
+import type { 文書パス } from "../domain/文書パス.js";
+import type { 文書リポジトリ名 } from "../domain/文書リポジトリ名.js";
+import type { 文書タイトル } from "../domain/文書タイトル.js";
 import type { 現在の作業内容 } from "../domain/現在の作業内容.js";
 import type { 稼働状態 } from "../domain/稼働状態.js";
 import type { 稼働表明 } from "../domain/稼働表明.js";
@@ -21,6 +26,7 @@ import { 既読リポジトリ } from "./既読リポジトリ.js";
 import { メッセージリポジトリ } from "./メッセージリポジトリ.js";
 import { メンバーリポジトリ } from "./メンバーリポジトリ.js";
 import { ルーム概要リポジトリ } from "./ルーム概要リポジトリ.js";
+import { 文書索引リポジトリ } from "./文書索引リポジトリ.js";
 import { 稼働表明リポジトリ } from "./稼働表明リポジトリ.js";
 
 // 永続化の窓口となるファサード。スキーマ初期化・マイグレーションを担い、
@@ -32,6 +38,7 @@ export class メッセージストア {
   private readonly ルーム概要: ルーム概要リポジトリ;
   private readonly 稼働表明: 稼働表明リポジトリ;
   private readonly キャラ: キャラリポジトリ;
+  private readonly 文書索引: 文書索引リポジトリ;
 
   private constructor(private readonly db: Database.Database) {
     this.メッセージ = new メッセージリポジトリ(db);
@@ -40,6 +47,7 @@ export class メッセージストア {
     this.ルーム概要 = new ルーム概要リポジトリ(db, this.既読);
     this.稼働表明 = new 稼働表明リポジトリ(db);
     this.キャラ = new キャラリポジトリ(db);
+    this.文書索引 = new 文書索引リポジトリ(db);
   }
 
   static ファイルから開く(パス: string): メッセージストア {
@@ -141,6 +149,19 @@ export class メッセージストア {
 
   キャラ一覧を取得する(): キャラ[] {
     return this.キャラ.一覧を取得する();
+  }
+
+  文書索引を登録または更新する(
+    リポジトリ: 文書リポジトリ名,
+    パス: 文書パス,
+    タイトル: 文書タイトル,
+    概要: 文書概要,
+  ): 文書索引エントリ {
+    return this.文書索引.登録または更新する(リポジトリ, パス, タイトル, 概要);
+  }
+
+  文書索引一覧を取得する(): 文書索引エントリ[] {
+    return this.文書索引.一覧を取得する();
   }
 
   閉じる(): void {

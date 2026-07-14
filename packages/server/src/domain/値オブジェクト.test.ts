@@ -7,6 +7,11 @@ import { キャラプロンプト } from "./キャラプロンプト.js";
 import { ルームID } from "./ルームID.js";
 import { 個別宛, 全員宛, 宛先をDTO値にする, 宛先をDTO値から作る } from "./宛先.js";
 import { 検証エラー } from "./検証エラー.js";
+import { 文書パス } from "./文書パス.js";
+import { 文書リポジトリ名 } from "./文書リポジトリ名.js";
+import { 文書タイトル } from "./文書タイトル.js";
+import { 文書概要 } from "./文書概要.js";
+import { 許可リポジトリ一覧 } from "./許可リポジトリ一覧.js";
 import { 行動パターンメモ } from "./行動パターンメモ.js";
 
 describe("ルームID", () => {
@@ -118,5 +123,78 @@ describe("アイコンDataUrl", () => {
 
   it("data:始まりでない文字列は検証エラーになる", () => {
     expect(() => アイコンDataUrl.create("https://example.com/icon.png")).toThrow(検証エラー);
+  });
+});
+
+describe("文書リポジトリ名", () => {
+  it("英数字名を受け入れる", () => {
+    expect(文書リポジトリ名.create("AgentRoom").値).toBe("AgentRoom");
+  });
+
+  it("パス区切り文字・空文字を弾く", () => {
+    expect(() => 文書リポジトリ名.create("a/b")).toThrow(検証エラー);
+    expect(() => 文書リポジトリ名.create("")).toThrow(検証エラー);
+  });
+});
+
+describe("文書パス", () => {
+  it("リポジトリ相対パスを受け入れる", () => {
+    expect(文書パス.create("DESIGN.md").値).toBe("DESIGN.md");
+    expect(文書パス.create("_doc/開発スレッド.md").値).toBe("_doc/開発スレッド.md");
+  });
+
+  it("絶対パスを弾く", () => {
+    expect(() => 文書パス.create("/etc/passwd")).toThrow(検証エラー);
+    expect(() => 文書パス.create("C:\\Windows\\System32")).toThrow(検証エラー);
+  });
+
+  it("パストラバーサル(..)を弾く", () => {
+    expect(() => 文書パス.create("../../etc/passwd")).toThrow(検証エラー);
+    expect(() => 文書パス.create("a/../b")).toThrow(検証エラー);
+  });
+
+  it("前後の空白・空文字を弾く", () => {
+    expect(() => 文書パス.create(" a.md")).toThrow(検証エラー);
+    expect(() => 文書パス.create("")).toThrow(検証エラー);
+  });
+});
+
+describe("文書タイトル", () => {
+  it("前後の空白を除去する", () => {
+    expect(文書タイトル.create(" 設計文書 ").値).toBe("設計文書");
+  });
+
+  it("空文字は検証エラーになる", () => {
+    expect(() => 文書タイトル.create("   ")).toThrow(検証エラー);
+  });
+
+  it("上限文字数を超えると検証エラーになる", () => {
+    expect(() => 文書タイトル.create("あ".repeat(301))).toThrow(検証エラー);
+    expect(文書タイトル.create("あ".repeat(300)).値.length).toBe(300);
+  });
+});
+
+describe("文書概要", () => {
+  it("未指定・空文字はnullに正規化される", () => {
+    expect(文書概要.create(undefined).値).toBeNull();
+    expect(文書概要.create(null).値).toBeNull();
+    expect(文書概要.create("  ").値).toBeNull();
+  });
+
+  it("上限文字数を超えると検証エラーになる", () => {
+    expect(() => 文書概要.create("あ".repeat(2001))).toThrow(検証エラー);
+  });
+});
+
+describe("許可リポジトリ一覧", () => {
+  it("登録済みの名前だけを含むと判定する", () => {
+    const 一覧 = 許可リポジトリ一覧.create(["Jimbo", "AgentRoom", "Fudaba"]);
+    expect(一覧.含むか("AgentRoom")).toBe(true);
+    expect(一覧.含むか("未知のリポジトリ")).toBe(false);
+  });
+
+  it("空の一覧はどの名前も含まない", () => {
+    const 一覧 = 許可リポジトリ一覧.create([]);
+    expect(一覧.含むか("Jimbo")).toBe(false);
   });
 });

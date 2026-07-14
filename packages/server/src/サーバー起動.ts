@@ -6,6 +6,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { WSルートを登録する } from "./api/wsルート.js";
 import { ルートを登録する } from "./api/ルート.js";
 import { オリジンを許可判定する } from "./domain/オリジン許可判定.js";
+import { 許可リポジトリ一覧を読み込む } from "./infra/許可リポジトリ読み込み.js";
 import { 自機のIPv4アドレス一覧を取得する } from "./infra/自機IPv4アドレス一覧.js";
 import { メッセージストア } from "./infra/メッセージストア.js";
 import { 新着通知ハブ } from "./infra/新着通知ハブ.js";
@@ -36,6 +37,10 @@ export async function AgentRoomサーバーを起動する(
     mkdirSync(path.dirname(設定.DBパス), { recursive: true });
     const ストア = メッセージストア.ファイルから開く(設定.DBパス);
     const ハブ = new 新着通知ハブ();
+    // 文書索引(Phase C第1歩)の登録可否判定に使う許可リポジトリ一覧。このモジュール自身が
+    // 常にJimboのsubmodules配下に配置される前提で、自分のディレクトリを起点に
+    // Jimboの.gitmodulesを探索する(参照: infra/許可リポジトリ読み込み.ts)
+    const 許可リポジトリ一覧 = 許可リポジトリ一覧を読み込む(import.meta.dirname);
 
     const app = Fastify({ logger: true });
     await app.register(websocket);
@@ -60,7 +65,7 @@ export async function AgentRoomサーバーを起動する(
       }
     });
 
-    ルートを登録する(app, { ストア, ハブ });
+    ルートを登録する(app, { ストア, ハブ, 許可リポジトリ一覧 });
     WSルートを登録する(app, { ストア, ハブ });
     for (const 登録する of 設定.追加ルート登録関数一覧 ?? []) {
       登録する(app);

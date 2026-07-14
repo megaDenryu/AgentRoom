@@ -46,6 +46,17 @@ export function データベースを初期化する(db: Database.Database): voi
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS documents (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      repository TEXT NOT NULL,
+      path TEXT NOT NULL,
+      title TEXT NOT NULL,
+      summary TEXT,
+      registered_at TEXT NOT NULL,
+      indexed_at TEXT NOT NULL,
+      UNIQUE (repository, path)
+    );
+    CREATE INDEX IF NOT EXISTS idx_documents_repository ON documents(repository);
   `);
   宛先列を追加する(db);
 }

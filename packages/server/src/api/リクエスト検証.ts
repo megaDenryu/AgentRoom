@@ -112,6 +112,31 @@ export function キャラ登録内容に絞る(ボディ: unknown): {
   );
 }
 
+export function 文書索引登録内容に絞る(ボディ: unknown): {
+  リポジトリ: string;
+  パス: string;
+  タイトル: string;
+  概要: string | undefined;
+} {
+  if (
+    typeof ボディ === "object" &&
+    ボディ !== null &&
+    "リポジトリ" in ボディ &&
+    typeof ボディ.リポジトリ === "string" &&
+    "パス" in ボディ &&
+    typeof ボディ.パス === "string" &&
+    "タイトル" in ボディ &&
+    typeof ボディ.タイトル === "string"
+  ) {
+    const 概要 =
+      "概要" in ボディ && typeof ボディ.概要 === "string" ? ボディ.概要 : undefined;
+    return { リポジトリ: ボディ.リポジトリ, パス: ボディ.パス, タイトル: ボディ.タイトル, 概要 };
+  }
+  throw new 検証エラー(
+    'ボディは { "リポジトリ": string, "パス": string, "タイトル": string, "概要"?: string } である必要があります',
+  );
+}
+
 export function 数値クエリを読む(値: string | undefined, デフォルト: number): number {
   if (値 === undefined) return デフォルト;
   const 数値 = Number(値);
