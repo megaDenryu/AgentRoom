@@ -15,7 +15,8 @@
       "sengen-ui": ["../../submodules/SengenUI/index"],
       "sengen-ui/*": ["../../submodules/SengenUI/*"],
       "vscode-shell-layout": ["../../submodules/VscodeShellLayout/src/index"],
-      "vscode-shell-layout/*": ["../../submodules/VscodeShellLayout/src/*"]
+      "vscode-shell-layout/*": ["../../submodules/VscodeShellLayout/src/*"],
+      "FudabaUi/*": ["../../submodules/Fudaba/packages/ui/src/*"]
     }
   },
   "include": ["src/**/*.ts"]

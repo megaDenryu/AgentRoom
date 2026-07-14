@@ -8,3 +8,14 @@ export const ルームアイコン = (size = 20, color = "currentColor") =>
     color,
     paths: ["M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"],
   });
+
+// Lucide "tag" 相当。札場(作業アイテム台帳)の札を表す
+export const 札場アイコン = (size = 20, color = "currentColor") =>
+  icon({
+    size,
+    color,
+    paths: [
+      "M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z",
+      "M7 7h.01",
+    ],
+  });

@@ -32,6 +32,13 @@ export default defineConfig({
         find: /^vscode-shell-layout\//,
         replacement: path.resolve(__dirname, "../../submodules/VscodeShellLayout/src") + "/",
       },
+      // Fudaba（札場）はプラグイン型住民として独立リポジトリを持ち、UIビュー部品を
+      // ソースのまま提供する（DESIGN.md「提供する3点セット」参照）。ビルド成果物は
+      // コミットされていないため、SengenUIと同様ソース直参照のエイリアスにする
+      {
+        find: /^FudabaUi\//,
+        replacement: path.resolve(__dirname, "../../submodules/Fudaba/packages/ui/src") + "/",
+      },
     ],
   },
   build: {
