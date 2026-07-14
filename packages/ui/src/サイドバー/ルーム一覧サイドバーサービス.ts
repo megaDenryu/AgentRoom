@@ -5,6 +5,7 @@ import { メンバー項目View } from "./メンバー項目View";
 import { メンバー見出しラベル } from "./メンバー見出しラベル";
 import { ルーム一覧サイドバー部品 } from "./ルーム一覧サイドバー部品";
 import { ルーム一覧領域 } from "./ルーム一覧領域";
+import { ルームIDが妥当か, ルームID不正時のメッセージ } from "./ルームID検証";
 import { ルーム項目View } from "./ルーム項目View";
 import { 状態表示ラベル } from "./状態表示ラベル";
 
@@ -57,6 +58,10 @@ export class ルーム一覧サイドバーサービス {
 
   // ルーム作成 = 自分（現在の送信者名・種別human）をそのルームにメンバー登録する
   async ルームを作成する(ルームID: string): Promise<void> {
+    if (!ルームIDが妥当か(ルームID)) {
+      this._状態表示.エラーを表示する(ルームID不正時のメッセージ);
+      return;
+    }
     try {
       await this._クライアント.メンバーを登録する({
         ルームID,
