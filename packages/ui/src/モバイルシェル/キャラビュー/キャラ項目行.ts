@@ -15,14 +15,14 @@ export class キャラ項目行 extends DivC implements I配線可能<Iキャラ
 
   constructor(合成: キャラ稼働合成) {
     super({ class: styles.項目 });
-    const { キャラ, 稼働状態 } = 合成;
+    const { キャラ, 稼働状態, 参加ルーム一覧 } = 合成;
     const 稼働色 = 稼働状態 !== null ? 稼働状況色を返す(稼働状態) : "transparent";
     this.setCssVariable("--chara-type-color", キャラ種別色を返す(キャラ.種別))
       .setCssVariable("--chara-presence-color", 稼働色)
       .onClick(() => this._配線.先.on選択())
       .childs([
         img({ src: キャラ.アイコンdataUrl, alt: キャラ.名前, class: styles.項目アイコン }),
-        div({ class: styles.項目本文 }).childs([
+        div({ class: styles.項目本文 }).childIfs([
             div({ class: styles.項目見出し行 }).childIfs([
                 span({ text: キャラ.名前, class: styles.項目名 }),
                 span({ text: キャラ.種別, class: styles.種別バッジ }),
@@ -31,7 +31,15 @@ export class キャラ項目行 extends DivC implements I配線可能<Iキャラ
                   True: () => span({ text: 稼働状態 ?? "", class: styles.稼働バッジ }),
                   False: () => span({ text: "未申告", class: styles.未申告バッジ }),
                 }]),
-            div({ class: styles.行動メモ, text: キャラ.行動パターンメモ })])]);
+            div({ class: styles.行動メモ, text: キャラ.行動パターンメモ }),
+            {
+              If: 参加ルーム一覧.length > 0,
+              True: () =>
+                span({
+                  text: `参加中のルーム: ${参加ルーム一覧.join(", ")}`,
+                  class: styles.参加ルーム行,
+                }),
+            }])]);
   }
 
   配線する(配線: Iキャラ項目行配線): this {

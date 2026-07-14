@@ -115,6 +115,13 @@ export const 行動メモ = style({
   overflowWrap: "anywhere",
 });
 
+export const 参加ルーム行 = style({
+  fontSize: "12px",
+  fontStyle: "italic",
+  color: AgentRoomテーマ配色.パネルテキスト薄,
+  overflowWrap: "anywhere",
+});
+
 // キャラ作成の導線(FAB)。ルーム一覧ビューの新規作成FABと同じ配置規約
 export const 新規作成FAB = style({
   position: "absolute",

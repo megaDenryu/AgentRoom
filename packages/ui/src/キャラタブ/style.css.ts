@@ -137,6 +137,13 @@ export const 行動メモ = style({
   overflowWrap: "anywhere",
 });
 
+export const 参加ルーム行 = style({
+  fontSize: "11px",
+  fontStyle: "italic",
+  color: AgentRoomテーマ配色.パネルテキスト薄,
+  overflowWrap: "anywhere",
+});
+
 export const 項目ボタン列 = style({
   display: "flex",
   flexDirection: "column",
