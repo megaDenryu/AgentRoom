@@ -1,148 +1,42 @@
 import type { Relayクライアント } from "../通信/Relayクライアント";
 import { 送信者名を読み込む } from "../送信者名記憶";
 import { 現在ロケールを取得する } from "../文言/現在ロケール";
-import { メンバー一覧領域 } from "./メンバー一覧領域";
-import { メンバー項目View } from "./メンバー項目View";
-import { メンバー見出しラベル } from "./メンバー見出しラベル";
-import { ルーム一覧サイドバー部品 } from "./ルーム一覧サイドバー部品";
-import { ルーム一覧領域 } from "./ルーム一覧領域";
 import { ルームIDが妥当か, ルームID不正時のメッセージを返す } from "./ルームID検証";
 import { ルーム項目View } from "./ルーム項目View";
 import type { サイドバー内容 } from "./サイドバー内容";
-import { 状態表示ラベル } from "./状態表示ラベル";
+import { メンバー管理サービス } from "./メンバー管理サービス";
+import type { ルーム一覧サイドバー部品 } from "./ルーム一覧サイドバー部品";
 
-// ルーム一覧サイドバーのロジック層。ルーム一覧・メンバー台帳のAPI呼び出しと
-// 選択中ルームの追跡を担い、サイドバー本体は配線に徹する
 export class ルーム一覧サイドバーサービス {
-  private _選択中ルームID: string | null = null;
-
-  constructor(
-    private readonly _クライアント: Relayクライアント,
-    private readonly _部品: ルーム一覧サイドバー部品,
-    private readonly _ルーム一覧: ルーム一覧領域,
-    private readonly _メンバー一覧: メンバー一覧領域,
-    private readonly _メンバー見出し: メンバー見出しラベル,
-    private readonly _状態表示: 状態表示ラベル,
-    private readonly _文言: サイドバー内容,
-    private readonly _onルーム選択: (ルームID: string) => void,
-    private readonly _onメンバー選択: (名前: string) => void,
-  ) {}
-
-  // アプリシェルがタブ選択に追従して呼ぶ。メンバーパネルの対象ルームが切り替わる
-  選択ルームを設定する(ルームID: string | null): void {
-    if (this._選択中ルームID === ルームID) return;
-    this._選択中ルームID = ルームID;
-    this._メンバー見出し.ルームを表示する(ルームID);
-    if (ルームID === null) {
-      this._メンバー一覧.未選択を表示する();
-      return;
-    }
-    void this._メンバー一覧を更新する();
+  private readonly _メンバー: メンバー管理サービス;
+  constructor(private readonly _client: Relayクライアント, private readonly _部品: ルーム一覧サイドバー部品,
+    private readonly _文言: サイドバー内容, private readonly _onRoom: (id: string) => void,
+    onMember: (name: string) => void) {
+    this._メンバー = new メンバー管理サービス(_client, _部品, _文言, onMember);
   }
-
+  選択ルームを設定する(id: string | null): void { this._メンバー.選択ルームを設定する(id); }
   async 更新する(): Promise<void> {
     try {
-      const 一覧 = await this._クライアント.ルーム一覧を取得する(送信者名を読み込む());
-      this._ルーム一覧.全件を差し替える(
-        一覧.map((概要) =>
-          new ルーム項目View(概要, this._文言).配線する({
-            on選択: () => this._onルーム選択(概要.ルームID),
-          }),
-        ),
-      );
-      await this._メンバー一覧を更新する();
-      await this._キャラ候補を更新する();
-      this._状態表示.クリアする();
-    } catch (エラー) {
-      this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : this._文言.一覧取得失敗,
-      );
-    }
+      const list = await this._client.ルーム一覧を取得する(送信者名を読み込む());
+      this._部品.ルーム一覧.全件を差し替える(list.map((room) =>
+        new ルーム項目View(room, this._文言).配線する({ on選択: () => this._onRoom(room.ルームID) }),
+      ));
+      await this._メンバー.更新する(); await this._メンバー.候補を更新する(); this._部品.状態表示.クリアする();
+    } catch (error) { this._エラー(error, this._文言.一覧取得失敗); }
   }
-
-  // キャラ台帳の取得に失敗しても、メンバー追加フォームは自由入力のまま使えるため
-  // ルーム一覧表示は壊さずサイレントフォールバック(空配列)する
-  private async _キャラ候補を更新する(): Promise<void> {
-    try {
-      const キャラ一覧 = await this._クライアント.キャラ一覧を取得する();
-      this._部品.メンバー追加フォーム.キャラ候補を更新する(
-        キャラ一覧.map((キャラ) => キャラ.名前),
-      );
-    } catch {
-      this._部品.メンバー追加フォーム.キャラ候補を更新する([]);
-    }
-  }
-
-  // ルーム作成 = 自分（現在の送信者名・種別human）をそのルームにメンバー登録する
-  async ルームを作成する(ルームID: string): Promise<void> {
-    if (!ルームIDが妥当か(ルームID)) {
-      this._状態表示.エラーを表示する(ルームID不正時のメッセージを返す(現在ロケールを取得する()));
-      return;
+  async ルームを作成する(id: string): Promise<void> {
+    if (!ルームIDが妥当か(id)) {
+      this._部品.状態表示.エラーを表示する(ルームID不正時のメッセージを返す(現在ロケールを取得する())); return;
     }
     try {
-      await this._クライアント.メンバーを登録する({
-        ルームID,
-        名前: 送信者名を読み込む(),
-        種別: "human",
-      });
-      this._部品.新規ルームフォーム.クリアする();
-      this._状態表示.クリアする();
-      this._onルーム選択(ルームID);
-      await this.更新する();
-    } catch (エラー) {
-      this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : this._文言.作成失敗,
-      );
-    }
+      await this._client.メンバーを登録する({ ルームID: id, 名前: 送信者名を読み込む(), 種別: "human" });
+      this._部品.新規ルームフォーム.クリアする(); this._部品.状態表示.クリアする();
+      this._onRoom(id); await this.更新する();
+    } catch (error) { this._エラー(error, this._文言.作成失敗); }
   }
-
-  async メンバーを追加する(名前: string, 種別: string): Promise<void> {
-    if (this._選択中ルームID === null) {
-      this._状態表示.エラーを表示する(this._文言.ルーム未選択エラー);
-      return;
-    }
-    try {
-      await this._クライアント.メンバーを登録する({
-        ルームID: this._選択中ルームID,
-        名前,
-        種別,
-      });
-      this._部品.メンバー追加フォーム.クリアする();
-      this._状態表示.クリアする();
-      await this._メンバー一覧を更新する();
-    } catch (エラー) {
-      this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : this._文言.メンバー追加失敗,
-      );
-    }
-  }
-
-  async メンバーを削除する(名前: string): Promise<void> {
-    if (this._選択中ルームID === null) return;
-    try {
-      await this._クライアント.メンバーを削除する({
-        ルームID: this._選択中ルームID,
-        名前,
-      });
-      this._状態表示.クリアする();
-      await this._メンバー一覧を更新する();
-    } catch (エラー) {
-      this._状態表示.エラーを表示する(
-        エラー instanceof Error ? エラー.message : this._文言.メンバー削除失敗,
-      );
-    }
-  }
-
-  private async _メンバー一覧を更新する(): Promise<void> {
-    if (this._選択中ルームID === null) return;
-    const メンバー = await this._クライアント.メンバー一覧を取得する(this._選択中ルームID);
-    this._メンバー一覧.全件を差し替える(
-      メンバー.map((一人) =>
-        new メンバー項目View(一人, this._文言).配線する({
-          on選択: () => this._onメンバー選択(一人.名前),
-          on削除: () => void this.メンバーを削除する(一人.名前),
-        }),
-      ),
-    );
+  メンバーを追加する(name: string, kind: string): Promise<void> { return this._メンバー.追加する(name, kind); }
+  メンバーを削除する(name: string): Promise<void> { return this._メンバー.削除する(name); }
+  private _エラー(error: unknown, text: string): void {
+    this._部品.状態表示.エラーを表示する(error instanceof Error ? error.message : text);
   }
 }

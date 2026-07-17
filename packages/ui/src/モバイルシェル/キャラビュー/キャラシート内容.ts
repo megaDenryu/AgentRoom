@@ -1,150 +1,35 @@
-import {
-  button,
-  div,
-  select,
-  span,
-  textInput,
-  textarea,
-  LV2HtmlComponentBase,
-  配線ポート,
-  type ButtonC,
-  type DivC,
-  type I配線可能,
-  type SelectC,
-  type TextAreaC,
-  type TextInputC,
-} from "sengen-ui";
-import { キャラ種別一覧, type キャラDTO } from "../../通信/キャラ型";
-import { エラー表示ラベル } from "../エラー表示ラベル";
-import { キャラアイコン入力 } from "./キャラアイコン入力";
+import { div, span, LV2部品集約Base, 配線ポート, type DivC, type I配線可能 } from "sengen-ui";
+import type { キャラDTO } from "../../通信/キャラ型";
 import type { キャラ一覧内容 } from "./キャラ一覧内容";
+import { キャラシート部品 } from "./キャラシート部品";
+import { キャラシートサービス } from "./キャラシートサービス";
 import * as styles from "./style.css";
 
-export interface キャラ入力 {
-  readonly 名前: string;
-  readonly 種別: string;
-  readonly プロンプト: string;
-  readonly アイコンdataUrl: string;
-  readonly 行動パターンメモ: string;
-}
+export interface キャラ入力 { readonly 名前: string; readonly 種別: string; readonly プロンプト: string;
+  readonly アイコンdataUrl: string; readonly 行動パターンメモ: string }
+export interface Iキャラシート内容配線 { on保存(入力: キャラ入力): void; on削除(名前: string): void }
 
-export interface Iキャラシート内容配線 {
-  on保存(入力: キャラ入力): void;
-  on削除(名前: string): void;
-}
-
-// ボトムシートに差し込む「キャラの作成・編集」内容(モバイル専用のLV2素部品)。
-// 既存キャラを渡せば編集モード(名前固定+削除ボタン表示)、省略すれば新規作成モードになる
-export class キャラシート内容
-  extends LV2HtmlComponentBase
-  implements I配線可能<Iキャラシート内容配線>
-{
+export class キャラシート内容 extends LV2部品集約Base<キャラシート部品, キャラシートサービス>
+  implements I配線可能<Iキャラシート内容配線> {
   protected _componentRoot: DivC;
   private readonly _配線 = new 配線ポート<Iキャラシート内容配線>("キャラシート内容");
-  private readonly _名前入力: TextInputC;
-  private readonly _種別セレクト: SelectC;
-  private readonly _アイコン入力: キャラアイコン入力;
-  private readonly _プロンプト入力: TextAreaC;
-  private readonly _行動パターン入力: TextAreaC;
-  private readonly _エラー表示 = new エラー表示ラベル();
-  private readonly _保存ボタン: ButtonC;
-  private readonly _既存名: string | null;
-
-  constructor(
-    private readonly _文言: キャラ一覧内容,
-    既存?: キャラDTO,
-  ) {
-    super();
-    this._既存名 = 既存?.名前 ?? null;
-    this._アイコン入力 = new キャラアイコン入力(_文言.アイコンalt);
-    this._名前入力 = textInput({
-      placeholder: _文言.名前プレースホルダ,
-      value: 既存?.名前 ?? "",
-      disabled: 既存 !== undefined,
-      class: styles.入力,
-    });
-    this._種別セレクト = select({
-      options: キャラ種別一覧.map((種別) => ({
-        value: 種別,
-        text: 種別,
-        selected: 種別 === (既存?.種別 ?? キャラ種別一覧[0]),
-      })),
-      class: styles.セレクト,
-    });
-    this._プロンプト入力 = textarea({
-      placeholder: _文言.プロンプトプレースホルダ,
-      value: 既存?.プロンプト ?? "",
-      rows: 4,
-      class: styles.テキストエリア,
-    });
-    this._行動パターン入力 = textarea({
-      placeholder: _文言.行動パターンプレースホルダ,
-      value: 既存?.行動パターンメモ ?? "",
-      rows: 2,
-      class: styles.テキストエリア,
-    });
-    if (既存 !== undefined && 既存.アイコンdataUrl.length > 0) {
-      this._アイコン入力.値を設定する(既存.アイコンdataUrl);
-    }
-    this._保存ボタン = button({
-      text: 既存 === undefined ? _文言.保存ボタン作成 : _文言.保存ボタン更新,
-      class: styles.保存ボタン,
-    }).onClick(() => this._保存を発火する());
-    this._componentRoot = this._ルートを構築する();
+  private readonly _部品: キャラシート部品;
+  private readonly _サービス: キャラシートサービス;
+  constructor(文言: キャラ一覧内容, existing?: キャラDTO) {
+    super(); this._部品 = new キャラシート部品(文言, existing);
+    this._サービス = new キャラシートサービス(this._部品, this._配線);
+    this._componentRoot = this._ルートを構築する(this._部品, this._サービス);
   }
-
-  配線する(配線: Iキャラシート内容配線): this {
-    this._配線.配線する(配線);
-    return this;
+  protected _ルートを構築する(部品: キャラシート部品, service: キャラシートサービス): DivC {
+    service.配線する();
+    return div({ class: styles.シート本体 }).childs([
+      span({ text: 部品.既存名 === null ? 部品.文言.シート見出し作成 : 部品.文言.シート見出し編集,
+        class: styles.シート見出し }),
+      部品.名前, 部品.種別, 部品.アイコン, 部品.プロンプト, 部品.行動, 部品.エラー,
+      div({ class: styles.ボタン行 }).childs([部品.保存, ...(部品.削除 === null ? [] : [部品.削除])]),
+    ]);
   }
-
-  エラーを表示する(文言: string): void {
-    this._エラー表示.表示する(文言);
-  }
-
-  保存中にする(保存中: boolean): void {
-    this._保存ボタン.setDisabled(保存中);
-  }
-
-  private _ルートを構築する(): DivC {
-    return (
-      div({ class: styles.シート本体 }).childs([
-          span({
-            text:
-              this._既存名 === null ? this._文言.シート見出し作成 : this._文言.シート見出し編集,
-            class: styles.シート見出し,
-          }),
-          this._名前入力,
-          this._種別セレクト,
-          this._アイコン入力,
-          this._プロンプト入力,
-          this._行動パターン入力,
-          this._エラー表示,
-          div({ class: styles.ボタン行 }).childIfs([
-              this._保存ボタン,
-              {
-                If: this._既存名 !== null,
-                True: () =>
-                  button({ text: this._文言.削除ボタン, class: styles.削除ボタン }).onClick(() => {
-                    const 名前 = this._既存名;
-                    if (名前 !== null) this._配線.先.on削除(名前);
-                  }),
-              }])])
-    );
-  }
-
-  private _保存を発火する(): void {
-    const 名前 = this._名前入力.getValue().trim();
-    if (名前.length === 0) {
-      this.エラーを表示する(this._文言.名前必須エラー);
-      return;
-    }
-    this._配線.先.on保存({
-      名前,
-      種別: this._種別セレクト.getValue(),
-      プロンプト: this._プロンプト入力.getValue(),
-      アイコンdataUrl: this._アイコン入力.値を取得する(),
-      行動パターンメモ: this._行動パターン入力.getValue(),
-    });
-  }
+  配線する(配線: Iキャラシート内容配線): this { this._配線.配線する(配線); return this; }
+  エラーを表示する(text: string): void { this._部品.エラー.表示する(text); }
+  保存中にする(value: boolean): void { this._部品.保存.setDisabled(value); }
 }
