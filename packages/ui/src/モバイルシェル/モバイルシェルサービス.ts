@@ -1,6 +1,6 @@
 import type { Relayクライアント } from "../通信/Relayクライアント";
 import { 会話ビュー } from "./会話ビュー/会話ビュー";
-import { キャラナビ項目id, ルームナビ項目id, 札場ナビ項目id } from "./ナビ項目一覧";
+import { キャラナビ項目id, 判定ナビ項目id, ルームナビ項目id, 札場ナビ項目id } from "./ナビ項目一覧";
 import type { モバイルシェル部品 } from "./モバイルシェル部品";
 import { 画面表示状態 } from "./状態";
 
@@ -54,6 +54,13 @@ export class モバイルシェルサービス {
     void this._部品.キャラ一覧ビュー.更新する();
   }
 
+  判定を開く(): void {
+    this._会話ビューを破棄する();
+    this._全画面を隠す();
+    this._部品.判定スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.表示);
+    this._部品.下部ナビ.選択する(判定ナビ項目id);
+  }
+
   private _会話ビューを破棄する(): void {
     this._現在の会話ビュー?.dispose();
     this._現在の会話ビュー?.delete();
@@ -64,6 +71,7 @@ export class モバイルシェルサービス {
     this._部品.会話スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
     this._部品.ルーム一覧ビュー.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
     this._部品.札場スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
+    this._部品.判定スロット.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
     this._部品.キャラ一覧ビュー.setAttribute(画面表示状態.attribute, 画面表示状態.value.非表示);
   }
 }

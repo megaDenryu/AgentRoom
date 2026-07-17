@@ -33,6 +33,19 @@ export const キャラアイコン = (size = 20, color = "currentColor") =>
     ],
   });
 
+// Lucide "clipboard-check" 相当。人間による判断待ちの問いを表す
+export const 判定アイコン = (size = 20, color = "currentColor") =>
+  icon({
+    size,
+    color,
+    paths: [
+      "M9 5h6",
+      "M9 3h6a2 2 0 0 1 2 2v1H7V5a2 2 0 0 1 2-2Z",
+      "M9 12l2 2 4-4",
+      "M7 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2",
+    ],
+  });
+
 // Lucide "chevron-left" 相当。モバイルシェルの画面遷移「戻る」ボタンに使う
 export const 戻るアイコン = (size = 20, color = "currentColor") =>
   icon({

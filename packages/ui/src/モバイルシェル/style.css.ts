@@ -81,6 +81,29 @@ export const ナビアイコン枠 = style({
   display: "flex",
 });
 
+export const ナビバッジ = style({
+  position: "absolute",
+  top: "-8px",
+  right: "-12px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minWidth: "18px",
+  height: "18px",
+  padding: "0 5px",
+  borderRadius: "9px",
+  backgroundColor: "#d94f5c",
+  color: "#fff",
+  fontSize: "10px",
+  fontWeight: 700,
+  lineHeight: 1,
+  boxSizing: "border-box",
+});
+
+globalStyle(`${ナビバッジ}[data-visible="false"]`, {
+  display: "none",
+});
+
 // signature: 富良野=ラベンダー畑を踏まえた「開花」インジケータ。アイコン下の小さな点が
 // タブが選択されるたびに咲く。他の演出は足さず、ここ一箇所に主張を集約する。
 // 非選択時はdisplay:noneにしておくことで、再選択のたびdisplayの復帰でアニメーションが

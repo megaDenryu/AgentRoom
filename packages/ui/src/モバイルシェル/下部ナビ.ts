@@ -38,6 +38,10 @@ export class 下部ナビ extends LV2HtmlComponentBase implements I配線可能<
     }
   }
 
+  バッジ件数を設定する(id: string, 件数: number): void {
+    this._項目一覧.find((項目) => 項目.項目id === id)?.バッジ件数を設定する(件数);
+  }
+
   private _ルートを構築する(項目一覧: readonly ナビ項目ボタン[]): DivC {
     return div({ class: styles.下部ナビ }).childs(項目一覧);
   }

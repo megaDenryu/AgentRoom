@@ -5,3 +5,4 @@ import { アクティビティID } from "vscode-shell-layout";
 export const ルームアクティビティ = アクティビティID("ルーム");
 export const 札場アクティビティ = アクティビティID("札場");
 export const キャラアクティビティ = アクティビティID("キャラ");
+export const 判定アクティビティ = アクティビティID("判定");
