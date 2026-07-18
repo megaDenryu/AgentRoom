@@ -7,8 +7,8 @@ describe("Jimbo埋め込みモード", () => {
     expect(Jimbo埋め込み中か("")).toBe(false);
   });
 
-  it("埋め込み時だけ札場とキャラを隠す", () => {
-    expect(埋め込み表示対象か("札場", true)).toBe(false);
+  it("埋め込み時だけキャラを隠す", () => {
+    expect(埋め込み表示対象か("札場", true)).toBe(true);
     expect(埋め込み表示対象か("キャラ", true)).toBe(false);
     expect(埋め込み表示対象か("判定", true)).toBe(true);
     expect(埋め込み表示対象か("キャラ", false)).toBe(true);
