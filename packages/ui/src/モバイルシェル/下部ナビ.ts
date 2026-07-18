@@ -1,5 +1,5 @@
 import { div, LV2HtmlComponentBase, 配線ポート, type DivC, type I配線可能 } from "sengen-ui";
-import { 下部ナビ項目一覧, ルームナビ項目id } from "./ナビ項目一覧";
+import { 下部ナビ項目一覧, ルームナビ項目id, type 下部ナビ項目定義 } from "./ナビ項目一覧";
 import { ナビ項目ボタン } from "./ナビ項目ボタン";
 import * as styles from "./style.css";
 
@@ -15,9 +15,9 @@ export class 下部ナビ extends LV2HtmlComponentBase implements I配線可能<
   private readonly _配線 = new 配線ポート<I下部ナビ配線>("下部ナビ");
   private readonly _項目一覧: readonly ナビ項目ボタン[];
 
-  constructor() {
+  constructor(項目定義: readonly 下部ナビ項目定義[] = 下部ナビ項目一覧) {
     super();
-    this._項目一覧 = 下部ナビ項目一覧.map((項目) =>
+    this._項目一覧 = 項目定義.map((項目) =>
       new ナビ項目ボタン(項目).配線する({
         on選択: () => this._配線.先.on項目選択(項目.id),
       }),
